@@ -11,3 +11,5 @@ features:
 - No drop items storage: /nodrop gui
 - Fully customization
 - Items that protect other slots from death
+
+<img src="https://i.imgur.com/s2BwNH5.png"></img>
