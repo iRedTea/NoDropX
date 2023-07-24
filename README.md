@@ -1,4 +1,4 @@
-<img src="https://i.imgur.com/vakBZX7.png"></img>
+<img src="https://i.imgur.com/AxYMos8.png)https://i.imgur.com/AxYMos8.png"></img>
 # NoDropX
 **Give no drop items!**
 
@@ -15,5 +15,4 @@ Give an no drop item: `/nodrop give [player] [item] (count)`
 - Developer API
 - Mods support (tested on Arclight 1.16.5)
 
-<img src="https://i.imgur.com/AxYMos8.png)https://i.imgur.com/AxYMos8.png"></img>
-
+<img src="https://i.imgur.com/vakBZX7.png"></img>
