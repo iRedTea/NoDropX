@@ -1,0 +1,84 @@
+plugins {
+    id 'java'
+    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("xyz.jpenilla.run-paper") version "2.1.0"
+}
+
+group = 'me.redtea'
+version = '1.0.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "spigotmc-repo"
+        url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+    }
+    maven {
+        name = "sonatype"
+        url = "https://oss.sonatype.org/content/groups/public/"
+    }
+    maven {
+        name = "CodeMC"
+        url = uri("https://repo.codemc.io/repository/maven-public/")
+    }
+    maven {
+        name = "papermc-repo"
+        url = "https://repo.papermc.io/repository/maven-public/"
+    }
+}
+
+dependencies {
+    implementation 'org.jetbrains:annotations:24.0.0'
+    compileOnly 'org.projectlombok:lombok:1.18.26'
+    annotationProcessor 'org.projectlombok:lombok:1.18.26'
+    compileOnly "com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT"
+    implementation "me.mattstudios.utils:matt-framework:1.4"
+    implementation 'de.tr7zw:item-nbt-api:2.11.3'
+    implementation "net.kyori:adventure-api:4.14.0"
+    implementation "net.kyori:adventure-platform-bukkit:4.3.0"
+    implementation files("libs/MiniMessages.jar")
+    compileOnly files("libs/nodropxforgebridge-1.1.jar")
+    implementation "dev.triumphteam:triumph-gui:3.1.2"
+}
+
+def targetJavaVersion = 8
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release = targetJavaVersion
+    }
+}
+
+processResources {
+    def props = [version: version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
+}
+
+
+shadowJar {
+    relocate 'de.tr7zw.changeme.nbtapi', 'me.redtea.nodropx.libs.tr7zw.nbt'
+    relocate 'de.tr7zw.annotations', 'me.redtea.nodropx.libs.tr7zw.annotations'
+    relocate 'me.mattstudios.mf', 'me.redtea.nodropx.libs.commands'
+    relocate 'dev.triumphteam', 'me.redtea.nodropx.libs.gui'
+    relocate 'org.checkerframework', 'me.redtea.nodropx.libs.message.oskarsmc.libs.checker'
+    relocate 'org.intellij', 'me.redtea.nodropx.libs.intellij'
+    relocate 'org.jetbrains', 'me.redtea.nodropx.libs.jetbrains'}
+
+
+tasks {
+    runServer {
+        minecraftVersion("1.16.5")
+    }
+}

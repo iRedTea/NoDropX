@@ -1,0 +1,16 @@
+name: NoDropX
+version: '${version}'
+main: me.redtea.nodropx.NoDropX
+api-version: '1.13'
+description: Set no drop status to your items
+author: itzRedTea
+authors: [itzRedTea]
+
+permissions:
+  nodropx.give:
+    description: "Allows give no drop items"
+  nodropx.reload:
+    description: "Allows reload the plugin"
+  nodropx.gui:
+    escription: "Allows open no drop gui"
+    default: true

@@ -1,0 +1,130 @@
+package me.redtea.nodropx.api.facade;
+
+import me.redtea.nodropx.api.facade.manipulator.StorageManipulator;
+import me.redtea.nodropx.util.MaterialUtils;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Collection;
+import java.util.UUID;
+
+/**
+ * Facade for all plugin functions
+ */
+public interface NoDropAPI {
+    /**
+     * Set no drop to item
+     * @param item the item who's no drop property are changing
+     * @param isNoDrop will the item can drop from inventory on death?
+     * @author redtea
+     * @since 1.0.0
+     */
+    void setNoDrop(@NotNull ItemStack item, boolean isNoDrop);
+
+    /**
+     * Check if item is no drop item
+     * @param item the item being checked
+     * @return true if item can not drop from inventory on death
+     * @author redtea
+     * @since 1.0.0
+     */
+    boolean isNoDrop(@NotNull ItemStack item);
+
+    /**
+     * Generate new no drop item by material and amount
+     * @param material material of item
+     * @param amount count of item
+     * @return no drop item
+     * @author redtea
+     * @since 1.0.0
+     */
+    ItemStack getNoDrop(@NotNull Material material, int amount);
+
+
+    /**
+     * Gives the entity no drop item
+     * @param entity who will get no drop item
+     * @param material type of item
+     * @param amount amount of item
+     * @author redtea
+     * @since 1.0.0
+     */
+    void giveNoDrop(@NotNull HumanEntity entity, @NotNull Material material, int amount);
+
+    /**
+     * returns an object for accessing the storage of a player with UUID playerUniqueId
+     * @param playerUniqueId UUID of player
+     * @return object for accessing the storage
+     * @author redtea
+     * @since 1.0.0
+     */
+    @NotNull StorageManipulator getStorageManipulator(@NotNull UUID playerUniqueId);
+
+    /**
+     * returns the slot numbers that an no drop item with this material saves at death
+     * @param material material to check
+     * @return numbers of saved slots
+     * @author redtea
+     * @since 1.0.0
+     */
+    @NotNull Collection<Integer> getCapacitySlots(Material material);
+
+    /**
+     * @see NoDropAPI#getCapacitySlots(Material)
+     */
+    default @NotNull Collection<Integer> getCapacitySlots(String material) {
+        return getCapacitySlots(MaterialUtils.getMaterialFromString(material));
+    }
+
+    /**
+     * @see NoDropAPI#getStorageManipulator(UUID) 
+     */
+    default @NotNull StorageManipulator getStorageManipulator(OfflinePlayer offlinePlayer) {
+        return getStorageManipulator(offlinePlayer.getUniqueId());
+    }
+
+    /**
+     * @see NoDropAPI#giveNoDrop(HumanEntity, Material, int)
+     */
+    default void giveNoDrop(@NotNull HumanEntity entity, @NotNull String material, int amount) {
+        giveNoDrop(entity, MaterialUtils.getMaterialFromString(material), amount);
+    }
+
+    /**
+     * @see NoDropAPI#giveNoDrop(HumanEntity, Material, int)
+     */
+    default void giveNoDrop(@NotNull HumanEntity entity, @NotNull Material material) {
+        giveNoDrop(entity, material, 1);
+    }
+
+    /**
+     * @see NoDropAPI#giveNoDrop(HumanEntity, Material, int)
+     */
+    default void giveNoDrop(@NotNull HumanEntity entity, @NotNull String material) {
+        giveNoDrop(entity, material, 1);
+    }
+
+    /**
+     * @see NoDropAPI#getNoDrop(Material, int)
+     */
+    default @NotNull ItemStack getNoDrop(@NotNull String material, int amount) {
+        return getNoDrop(MaterialUtils.getMaterialFromString(material), amount);
+    }
+
+    /**
+     * @see NoDropAPI#getNoDrop(Material, int)
+     */
+    default @NotNull ItemStack getNoDrop(@NotNull Material material) {
+        return getNoDrop(material, 1);
+    }
+
+    /**
+     * @see NoDropAPI#getNoDrop(Material, int)
+     */
+    default @NotNull ItemStack getNoDrop(@NotNull String material) {
+        return getNoDrop(material, 1);
+    }
+}

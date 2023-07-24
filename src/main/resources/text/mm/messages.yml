@@ -1,0 +1,24 @@
+usage:
+  - "<gray>[ <green>Usage of command <yellow>/nodrop <gray>]"
+  - "<gray>| <green>/give [player] [item] (amount) <yellow>- give no drop item"
+give:
+  fail: "<dark_red><bold>[!] <red>Fail! Check item type for valid."
+  success: "<green><bold>[!] <reset><green>Gived <yellow>%item%<green> to <yellow>%player%<green> amount <yellow>%amount%<green>!"
+reload: "<green>Plugin successfully reloaded at %time% ms"
+
+
+noPerms: "<dark_red><bold>[!] <red>No perms for this!"
+noConsole: "<dark_red><bold>[!] <red>Only players can use it!"
+noExists: "<dark_red><bold>[!] <red>This player doesnt exists!"
+
+gui:
+  title: "<bold>Personal storage"
+  frame:
+    name: "&7"
+    material: GLASS_PANE
+  prev:
+    name: "<red>Previous"
+    material: ARROW
+  next:
+    name: "<red>Next"
+    material: ARROW

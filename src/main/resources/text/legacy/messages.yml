@@ -1,0 +1,23 @@
+usage:
+  - "&7[ &aUsage of command &e/nodrop &7]"
+  - "&7| &a/give [player] [item] (amount) &e- give no drop item"
+give:
+  fail: "&4[!] &cFail! Check item type for valid."
+  success: "&2&l[!] &aGived &e%item%&a to &e%player%&a amount &e%amount%&a!"
+reload: "&aPlugin successfully reloaded at %time% ms"
+
+noPerms: "&4&l[!] &cNo perms for this!"
+noConsole: "&4&l[!] &cOnly players can use it!"
+noExists: "&4&l[!] &cThis player doesnt exists!"
+
+gui:
+  title: "&lPersonal storage"
+  frame:
+    name: "&7"
+    material: GLASS_PANE
+  prev:
+    name: "&cPrevious"
+    material: ARROW
+  next:
+    name: "&cNext"
+    material: ARROW
