@@ -1,5 +1,6 @@
 package me.redtea.nodropx.api.facade;
 
+import lombok.val;
 import me.redtea.nodropx.api.facade.manipulator.StorageManipulator;
 import me.redtea.nodropx.util.MaterialUtils;
 import org.bukkit.Material;
@@ -22,7 +23,7 @@ public interface NoDropAPI {
      * @author redtea
      * @since 1.0.0
      */
-    void setNoDrop(@NotNull ItemStack item, boolean isNoDrop);
+    ItemStack setNoDrop(@NotNull ItemStack item, boolean isNoDrop);
 
     /**
      * Check if item is no drop item
@@ -41,8 +42,20 @@ public interface NoDropAPI {
      * @author redtea
      * @since 1.0.0
      */
-    ItemStack getNoDrop(@NotNull Material material, int amount);
+    default ItemStack getNoDrop(@NotNull Material material, int amount) {
+        val item = new ItemStack(material, amount);
+        setNoDrop(item, true);
+        return item;
+    }
 
+    /**
+     * Gives the entity no drop item
+     * @param entity who will get no drop item
+     * @param item no drop item
+     * @author redtea
+     * @since 1.0.0
+     */
+    void giveNoDrop(@NotNull HumanEntity entity, @NotNull ItemStack item);
 
     /**
      * Gives the entity no drop item
@@ -52,7 +65,9 @@ public interface NoDropAPI {
      * @author redtea
      * @since 1.0.0
      */
-    void giveNoDrop(@NotNull HumanEntity entity, @NotNull Material material, int amount);
+    default void giveNoDrop(@NotNull HumanEntity entity, @NotNull Material material, int amount) {
+        giveNoDrop(entity, getNoDrop(material, amount));
+    }
 
     /**
      * returns an object for accessing the storage of a player with UUID playerUniqueId
@@ -64,7 +79,7 @@ public interface NoDropAPI {
     @NotNull StorageManipulator getStorageManipulator(@NotNull UUID playerUniqueId);
 
     /**
-     * returns the slot numbers that an no drop item with this material saves at death
+     * returns the slot numbers that no drop item with this material saves at death
      * @param material material to check
      * @return numbers of saved slots
      * @author redtea
@@ -75,9 +90,7 @@ public interface NoDropAPI {
     /**
      * @see NoDropAPI#getCapacitySlots(Material)
      */
-    default @NotNull Collection<Integer> getCapacitySlots(String material) {
-        return getCapacitySlots(MaterialUtils.getMaterialFromString(material));
-    }
+    @NotNull Collection<Integer> getCapacitySlots(String material);
 
     /**
      * @see NoDropAPI#getStorageManipulator(UUID) 
@@ -89,9 +102,7 @@ public interface NoDropAPI {
     /**
      * @see NoDropAPI#giveNoDrop(HumanEntity, Material, int)
      */
-    default void giveNoDrop(@NotNull HumanEntity entity, @NotNull String material, int amount) {
-        giveNoDrop(entity, MaterialUtils.getMaterialFromString(material), amount);
-    }
+    void giveNoDrop(@NotNull HumanEntity entity, @NotNull String material, int amount);
 
     /**
      * @see NoDropAPI#giveNoDrop(HumanEntity, Material, int)
@@ -110,9 +121,7 @@ public interface NoDropAPI {
     /**
      * @see NoDropAPI#getNoDrop(Material, int)
      */
-    default @NotNull ItemStack getNoDrop(@NotNull String material, int amount) {
-        return getNoDrop(MaterialUtils.getMaterialFromString(material), amount);
-    }
+    @NotNull ItemStack getNoDrop(@NotNull String material, int amount);
 
     /**
      * @see NoDropAPI#getNoDrop(Material, int)

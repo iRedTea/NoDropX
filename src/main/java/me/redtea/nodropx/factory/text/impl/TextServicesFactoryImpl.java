@@ -55,7 +55,7 @@ public class TextServicesFactoryImpl implements TextServicesFactory {
             cosmeticStrategy = new LoreMD5Cosmetics();
         } else cosmeticStrategy = new LoreKyoriCosmetic();
 
-        return new TextContext(cosmeticStrategy, messages, cosmetics, isSupportHEX, isSupportKyoriLore);
+        return new TextContext(cosmeticStrategy, messages, cosmetics, isSupportHEX, isSupportKyoriLore, "text/" + folder + "/messages.yml");
     }
 
 

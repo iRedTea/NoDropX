@@ -5,7 +5,12 @@ give:
   fail: "<dark_red><bold>[!] <red>Fail! Check item type for valid."
   success: "<green><bold>[!] <reset><green>Gived <yellow>%item%<green> to <yellow>%player%<green> amount <yellow>%amount%<green>!"
 reload: "<green>Plugin successfully reloaded at %time% ms"
-
+applyHand:
+  fail: "<dark_red><bold>[!] <red>Failed to apply no drop!"
+  success: "<green><bold>[!] <reset><green>Successfully applied no drop status to your item!"
+giveToStorage:
+  fail: "<dark_red><bold>[!] <red>Fail! Check item type for valid."
+  success: "<green><bold>[!] <reset><green>Gived <yellow>%item%<green> to <yellow>%player%<green> amount <yellow>%amount%<green> to storage!"
 
 noPerms: "<dark_red><bold>[!] <red>No perms for this!"
 noConsole: "<dark_red><bold>[!] <red>Only players can use it!"

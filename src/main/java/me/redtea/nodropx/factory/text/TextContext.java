@@ -12,4 +12,5 @@ public class TextContext {
     private final File cosmetics;
     private final boolean supportHex;
     private final boolean supportKyori;
+    private final String path;
 }

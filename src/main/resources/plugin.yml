@@ -5,6 +5,7 @@ api-version: '1.13'
 description: Set no drop status to your items
 author: itzRedTea
 authors: [itzRedTea]
+softdepend: [ItemsAdder]
 
 permissions:
   nodropx.give:
@@ -12,5 +13,9 @@ permissions:
   nodropx.reload:
     description: "Allows reload the plugin"
   nodropx.gui:
-    escription: "Allows open no drop gui"
+    description: "Allows open no drop gui"
     default: true
+  nodropx.giveStorage:
+    description: "Allows give to storage"
+  nodropx.applyhand:
+    description: "Allows apply no drop to item in main hand"

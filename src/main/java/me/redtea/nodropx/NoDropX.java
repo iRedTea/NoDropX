@@ -18,14 +18,19 @@ import me.redtea.nodropx.libs.carcadex.repo.MutableRepo;
 import me.redtea.nodropx.libs.carcadex.repo.Repo;
 import me.redtea.nodropx.libs.carcadex.repo.impl.yaml.YamlRepo;
 import me.redtea.nodropx.libs.message.container.Messages;
+import me.redtea.nodropx.libs.message.verifier.impl.FileMessageVerifier;
 import me.redtea.nodropx.listener.InventoryHandler;
 import me.redtea.nodropx.listener.PlayerHandler;
 import me.redtea.nodropx.model.cosmetic.impl.DisplayNameCosmetic;
+import me.redtea.nodropx.model.materialprovider.impl.ItemStackProviderDefault;
+import me.redtea.nodropx.model.materialprovider.impl.ItemsAdderProvider;
 import me.redtea.nodropx.schema.ItemStackListSchema;
 import me.redtea.nodropx.service.cosmetic.CosmeticService;
 import me.redtea.nodropx.service.cosmetic.impl.CosmeticServiceImpl;
 import me.redtea.nodropx.service.event.EventService;
 import me.redtea.nodropx.service.event.impl.EventServiceImpl;
+import me.redtea.nodropx.service.material.ItemStackService;
+import me.redtea.nodropx.service.material.impl.ItemStackServiceImpl;
 import me.redtea.nodropx.service.nbt.NBTService;
 import me.redtea.nodropx.service.nbt.impl.Tr7zwNBTServiceImpl;
 import me.redtea.nodropx.service.nodrop.NoDropService;
@@ -60,6 +65,8 @@ public final class NoDropX extends JavaPlugin {
     private boolean supportHEX;
     @Getter
     private boolean supportKyoriLore;
+    @Getter
+    private boolean supportItemsAdder;
     private MutableRepo<UUID, List<ItemStack>> pagesRepo;
     private Repo<String, List<Integer>> capacity;
 
@@ -74,6 +81,7 @@ public final class NoDropX extends JavaPlugin {
         supportHEX = textContext.isSupportHex();
         supportKyoriLore = textContext.isSupportKyori();
         messages = supportKyoriLore ? Messages.of(textContext.getMessages()) : Messages.legacy(textContext.getMessages());
+        messages.setVerifier(new FileMessageVerifier(getResource(textContext.getPath()), YamlConfiguration.loadConfiguration(textContext.getMessages()), textContext.getMessages()));
 
         cosmeticService = new CosmeticServiceImpl();
         cosmeticService.add(new DisplayNameCosmetic());
@@ -98,14 +106,17 @@ public final class NoDropX extends JavaPlugin {
                 .schema(new ItemStackListSchema(new File(getDataFolder(), "storage")))
                 .plugin(this)
                 .build();
+        ItemStackService itemStackService = initItemStackService();
 
 
         GuiFacade guiFacade = new GuiFacadeImpl(
-                new StorageGui(messages, pagesRepo, noDropService, this)
+                new StorageGui(messages, pagesRepo, noDropService, this, itemStackService)
         );
         StorageService storageService = new StorageServiceImpl(guiFacade, pagesRepo, noDropService);
 
-        NoDropAPI noDropAPI = new NoDropXFacade(noDropService, noDropItemFactory, storageService, capacity);
+
+
+        NoDropAPI noDropAPI = new NoDropXFacade(noDropService, noDropItemFactory, storageService, capacity, itemStackService);
         noDropAPIInstance = noDropAPI;
 
 
@@ -126,13 +137,23 @@ public final class NoDropX extends JavaPlugin {
         commandManager.getMessageHandler().register("cmd.no.console", sender -> messages.get("noConsole").send(sender));
         commandManager.getMessageHandler().register("cmd.no.exists", sender -> messages.get("noExists").send(sender));
         commandManager.getMessageHandler().register("cmd.wrong.usage", sender -> messages.get("usage").send(sender));
-        commandManager.getCompletionHandler().register("#materials", input -> Arrays.stream(Material.values()).map(Enum::name).collect(Collectors.toList()));
-        commandManager.register(new NoDropCommand(messages, noDropAPI, guiFacade, this));
+        commandManager.getCompletionHandler().register("#materials", input -> itemStackService.allMaterials());
+        commandManager.register(new NoDropCommand(messages, noDropAPI, guiFacade, this, itemStackService));
         bStatsInit();
         printCredits();
         checkUpdates();
     }
 
+    private ItemStackService initItemStackService() {
+        ItemStackService result = new ItemStackServiceImpl();
+        if (Bukkit.getPluginManager().getPlugin("ItemsAdder") != null) {
+            supportItemsAdder = true;
+            getLogger().info(ChatColor.GREEN + "ItemsAdder found! Registering a CustomStack provider for it.");
+            result.registerProvider(new ItemsAdderProvider());
+        }
+        result.registerProvider(new ItemStackProviderDefault());
+        return result;
+    }
 
     private void checkUpdates() {
         if(!(getConfig().contains("checkForUpdates") && getConfig().getBoolean("checkForUpdates"))) {
@@ -143,7 +164,7 @@ public final class NoDropX extends JavaPlugin {
                 getLogger().info("There is not a new update available.");
             } else {
                 getLogger().info("There is a new update available: " + version);
-                getLogger().info(". Download it from https://www.spigotmc.org/resources/nodropx.111485/");
+                getLogger().info("Download it from https://www.spigotmc.org/resources/nodropx.111485/");
             }
         });
     }

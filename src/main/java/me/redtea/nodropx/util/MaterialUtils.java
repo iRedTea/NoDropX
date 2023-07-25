@@ -7,27 +7,6 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class MaterialUtils {
-    @NotNull
-    public static Material getMaterialFromString(String s) {
-        if(s == null || s.equals("")) return Material.AIR;
-        Material material = Material.matchMaterial(s);
-        if(material != null) return material;
-
-        String[] spl = s.split(":");
-
-        if (spl[0].equals("minecraft")) {
-            material = Material.matchMaterial(spl[1]);
-        } else {
-            if(spl.length < 2) {
-                material = Material.matchMaterial(spl[0]);
-            } else {
-                material = Material.matchMaterial(spl[0]+"_"+spl[1]);;
-            }
-        }
-
-        return  material == null ? Material.AIR : material;
-    }
-
     public void remove(Inventory inventory, Material type, int amount) {
         if (amount <= 0) return;
         int size = inventory.getSize();

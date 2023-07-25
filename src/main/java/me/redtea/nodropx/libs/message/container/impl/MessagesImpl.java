@@ -1,5 +1,7 @@
 package me.redtea.nodropx.libs.message.container.impl;
 
+import lombok.Setter;
+import me.redtea.nodropx.libs.message.verifier.MessageVerifier;
 import me.redtea.nodropx.libs.message.container.Messages;
 import me.redtea.nodropx.libs.message.factory.MessageFactory;
 import me.redtea.nodropx.libs.message.model.Message;
@@ -11,6 +13,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 public class MessagesImpl implements Messages {
     private Map<String, Message> messages;
@@ -19,25 +22,51 @@ public class MessagesImpl implements Messages {
 
     private final Message NULL_MESSAGE = factory.nullMessage();
 
+    private ConfigurationSection section;
+
+    @Setter
+    private MessageVerifier verifier;
+
     public MessagesImpl() {
     }
 
     public MessagesImpl(@NotNull ConfigurationSection section) {
-        messages = fromConfigurationToMap(section);
+        this.section = section;
+    }
+    public MessagesImpl(@NotNull ConfigurationSection section, MessageVerifier verifier) {
+        this.section = section;
+        this.verifier = verifier;
     }
 
     public MessagesImpl(@NotNull File file) {
         this(YamlConfiguration.loadConfiguration(file));
     }
 
+    public MessagesImpl(@NotNull File file, MessageVerifier verifier) {
+        this(YamlConfiguration.loadConfiguration(file));
+        this.verifier = verifier;
+    }
+
+
+
     @Override
     public Message get(String key) {
-        return messages.get(key);
+        if(!has(key)) {
+            if(verifier != null) {
+                Optional<String> def = verifier.fromDefault(key);
+                if(def.isPresent()) {
+                    messages.put(key, factory.message(def.get()));
+                    return messages.get(key);
+                }
+                return NULL_MESSAGE;
+            }
+            return NULL_MESSAGE;
+        }
+        return messages.get(key) == null ? NULL_MESSAGE : messages.get(key);
     }
 
     @Override
     public Message put(String key, Message message) {
-        if(!has(key)) return NULL_MESSAGE;
         return messages.put(key, message);
     }
 
@@ -52,8 +81,15 @@ public class MessagesImpl implements Messages {
     }
 
     @Override
-    public void factory(MessageFactory messageFactory) {
+    public Messages factory(MessageFactory messageFactory) {
         this.factory = messageFactory;
+        return this;
+    }
+
+    @Override
+    public Messages init() {
+        messages = fromConfigurationToMap(section);
+        return this;
     }
 
     private Map<String, Message> fromConfigurationToMap(@NotNull ConfigurationSection section) {

@@ -5,6 +5,7 @@ import me.redtea.nodropx.libs.message.factory.MessageFactory;
 import me.redtea.nodropx.libs.message.factory.impl.LegacyFactoryImpl;
 import me.redtea.nodropx.libs.message.model.Message;
 import me.redtea.nodropx.libs.message.model.impl.NullMessage;
+import me.redtea.nodropx.libs.message.verifier.MessageVerifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -119,7 +120,11 @@ public interface Messages {
     /**
      * <h1>Sets custom message parse factory.</h1>
      */
-    void factory(MessageFactory messageFactory);
+    Messages factory(MessageFactory messageFactory);
+
+    Messages init();
+
+    void setVerifier(MessageVerifier verifier);
 
     /**
      * <h1>Create container using configuration section</h1>
@@ -134,7 +139,7 @@ public interface Messages {
      * @return container with messages
      */
     static Messages of(ConfigurationSection section) {
-        return new MessagesImpl(section);
+        return new MessagesImpl(section).init();
     }
 
     /**
@@ -168,7 +173,7 @@ public interface Messages {
      * @return container with messages
      */
     static Messages of(Plugin plugin) {
-        return of(plugin, "text/legacy/messages.yml");
+        return of(plugin, "messages.yml");
     }
 
     /**
@@ -202,28 +207,24 @@ public interface Messages {
      * @return container with messages
      */
     static Messages legacy(ConfigurationSection section) {
-        return asLegacy(of(section));
+        return new MessagesImpl(section).factory(new LegacyFactoryImpl()).init();
     }
 
     /** @see Messages#legacy(ConfigurationSection) */
     static Messages legacy(Plugin plugin, String fileName) {
-        return asLegacy(of(plugin, fileName));
+        File file = new File(plugin.getDataFolder(), fileName);
+        if(!file.exists()) plugin.saveResource(fileName, false);
+        return new MessagesImpl(file).factory(new LegacyFactoryImpl()).init();
     }
 
     /** @see Messages#legacy(ConfigurationSection) */
     static Messages legacy(Plugin plugin) {
-        return asLegacy(of(plugin));
+        return legacy(plugin, "messages.yml");
     }
 
     /** @see Messages#legacy(ConfigurationSection) */
     static Messages legacy(File file) {
-        return asLegacy(of(file));
-    }
-
-    /** @see Messages#legacy(ConfigurationSection) */
-    static Messages asLegacy(Messages messages) {
-        messages.factory(new LegacyFactoryImpl());
-        return messages;
+        return new MessagesImpl(file).factory(new LegacyFactoryImpl()).init();
     }
 
     /**

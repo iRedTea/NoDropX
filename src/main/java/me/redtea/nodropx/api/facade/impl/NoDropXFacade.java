@@ -5,6 +5,7 @@ import me.redtea.nodropx.api.facade.manipulator.StorageManipulator;
 import lombok.RequiredArgsConstructor;
 import me.redtea.nodropx.factory.item.NoDropItemFactory;
 import me.redtea.nodropx.libs.carcadex.repo.Repo;
+import me.redtea.nodropx.service.material.ItemStackService;
 import me.redtea.nodropx.service.nodrop.NoDropService;
 import me.redtea.nodropx.service.storage.StorageService;
 import org.bukkit.Material;
@@ -24,10 +25,12 @@ public class NoDropXFacade implements NoDropAPI {
     private final NoDropItemFactory itemFactory;
     private final StorageService storageService;
     private final Repo<String, List<Integer>> capacity;
+    private final ItemStackService itemStackService;
 
     @Override
-    public void setNoDrop(@NotNull ItemStack item, boolean isNoDrop) {
+    public ItemStack setNoDrop(@NotNull ItemStack item, boolean isNoDrop) {
         noDropService.setNoDrop(item, isNoDrop);
+        return item;
     }
 
     @Override
@@ -39,6 +42,11 @@ public class NoDropXFacade implements NoDropAPI {
     @NotNull
     public ItemStack getNoDrop(@NotNull Material material, int amount) {
         return itemFactory.createNoDrop(material, amount);
+    }
+
+    @Override
+    public void giveNoDrop(@NotNull HumanEntity entity, @NotNull ItemStack item) {
+        entity.getInventory().addItem(setNoDrop(item, true));
     }
 
     @Override
@@ -69,5 +77,20 @@ public class NoDropXFacade implements NoDropAPI {
     @Override
     public @NotNull Collection<Integer> getCapacitySlots(Material material) {
         return capacity.get(material.name()).orElse(new ArrayList<>());
+    }
+
+    @Override
+    public @NotNull Collection<Integer> getCapacitySlots(String material) {
+        return getCapacitySlots(itemStackService.get(material, 1).getType());
+    }
+
+    @Override
+    public void giveNoDrop(@NotNull HumanEntity entity, @NotNull String material, int amount) {
+        giveNoDrop(entity, itemStackService.get(material, amount));
+    }
+
+    @Override
+    public @NotNull ItemStack getNoDrop(@NotNull String material, int amount) {
+        return setNoDrop(itemStackService.get(material, amount), true);
     }
 }

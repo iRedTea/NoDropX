@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'me.redtea'
-version = '1.0.1-SNAPSHOT'
+version = '1.0.2-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -25,19 +25,23 @@ repositories {
         name = "papermc-repo"
         url = "https://repo.papermc.io/repository/maven-public/"
     }
+    maven {
+        url 'https://jitpack.io'
+    }
 }
 
 dependencies {
-    implementation 'org.jetbrains:annotations:24.0.0'
-    compileOnly 'org.projectlombok:lombok:1.18.26'
+    implementation "org.jetbrains:annotations:24.0.0"
+    compileOnly "org.projectlombok:lombok:1.18.26"
     annotationProcessor 'org.projectlombok:lombok:1.18.26'
     compileOnly "com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT"
     implementation "me.mattstudios.utils:matt-framework:1.4"
-    implementation 'de.tr7zw:item-nbt-api:2.11.3'
+    implementation "de.tr7zw:item-nbt-api:2.11.3"
     implementation "net.kyori:adventure-api:4.14.0"
     implementation "net.kyori:adventure-platform-bukkit:4.3.0"
     implementation files("libs/MiniMessages.jar")
     implementation "dev.triumphteam:triumph-gui:3.1.2"
+    compileOnly "com.github.LoneDev6:API-ItemsAdder:3.5.0b"
 }
 
 def targetJavaVersion = 8

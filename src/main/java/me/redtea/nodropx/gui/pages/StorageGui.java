@@ -7,6 +7,7 @@ import dev.triumphteam.gui.guis.ScrollingGui;
 import lombok.RequiredArgsConstructor;
 import me.redtea.nodropx.libs.carcadex.repo.MutableRepo;
 import me.redtea.nodropx.libs.message.container.Messages;
+import me.redtea.nodropx.service.material.ItemStackService;
 import me.redtea.nodropx.service.nodrop.NoDropService;
 import me.redtea.nodropx.util.MaterialUtils;
 import org.bukkit.Material;
@@ -27,6 +28,7 @@ public class StorageGui {
     private final MutableRepo<UUID, List<ItemStack>> pagesRepo;
     private final NoDropService noDropService;
     private final Plugin plugin;
+    private final ItemStackService itemStackService;
 
     public void open(Player player) {
         if(cache.containsKey(player.getUniqueId())) {
@@ -108,20 +110,20 @@ public class StorageGui {
     private void setFrame(ScrollingGui gui) {
         for(int i = 1; i < 10; ++i) {
             gui.setItem(6, i, ItemBuilder.from(
-                    MaterialUtils.getMaterialFromString(messages.get("gui.frame.material").asUnparsedString())
+                    itemStackService.get(messages.get("gui.frame.material").asUnparsedString(), 1)
             ).name(messages.get("gui.frame.name").asComponent()).asGuiItem(event -> event.setCancelled(true)));
         }
     }
 
     private void setButtons(ScrollingGui gui) {
         gui.setItem(6, 3, ItemBuilder.from(
-                MaterialUtils.getMaterialFromString(messages.get("gui.prev.material").asUnparsedString())
+                itemStackService.get(messages.get("gui.prev.material").asUnparsedString(), 1)
         ).name(messages.get("gui.prev.name").asComponent()).asGuiItem(event -> {
             gui.previous();
             event.setCancelled(true);
         }));
         gui.setItem(6, 7, ItemBuilder.from(
-                MaterialUtils.getMaterialFromString(messages.get("gui.next.material").asUnparsedString())
+                itemStackService.get(messages.get("gui.next.material").asUnparsedString(), 1)
         ).name(messages.get("gui.next.name").asComponent()).asGuiItem(event -> {
             gui.next();
             event.setCancelled(true);

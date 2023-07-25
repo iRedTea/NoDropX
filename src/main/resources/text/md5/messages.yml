@@ -5,6 +5,12 @@ give:
   fail: "&4[!] &cFail! Check item type for valid."
   success: "&2&l[!] &aGived &e%item%&a to &e%player%&a amount &e%amount%&a!"
 reload: "&aPlugin successfully reloaded at %time% ms"
+applyHand:
+  fail: "&4&l[!] &cFailed to apply no drop!"
+  success: "&2&l[!] &aSuccessfully applied no drop status to your item!"
+giveToStorage:
+  fail: "&4[!] &cFail! Check item type for valid."
+  success: "&2&l[!] &aGived &e%item%&a to &e%player%&a amount &e%amount%&a to storage!"
 
 noPerms: "&4&l[!] &cNo perms for this!"
 noConsole: "&4&l[!] &cOnly players can use it!"
