@@ -6,7 +6,7 @@ The plugin will allow you to create items that will not drop out of your invento
 
 Give an no drop item: `/nodrop give [player] [item] (count)`
 
-**Features:**
+**Features**
 - Supports HEX Colors (MiniMessages and MD5 ChatColor)
 - Supports all versions from 1.12.2 to 1.20.1 (Spigot/Paper)
 - No drop items storage: `/nodrop gui`
@@ -15,10 +15,10 @@ Give an no drop item: `/nodrop give [player] [item] (count)`
 - Developer API
 - Mods support (tested on Arclight 1.16.5)
 
-<h3>Coming soon</h3>
-/nodrop giveStorage - gives no drop to player no drop storage <br>
-/nodrpp applyHand - set item in hand no drop <br>
-Add ItemsAdder support
+**Coming soon**
+- /nodrop giveStorage - gives no drop to player no drop storage <br>
+- /nodrpp applyHand - set item in hand no drop <br>
+- add ItemSadder support
 
 
 <img src="https://i.imgur.com/7DdnANr.png"></img>
