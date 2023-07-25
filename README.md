@@ -7,6 +7,7 @@ The plugin will allow you to create items that will not drop out of your invento
 Give an no drop item: `/nodrop give [player] [item] (count)` <br>
 Check all plugin commands: https://github.com/iRedTea/NoDropX/wiki/Commands <br>
 Plugin wiki: https://github.com/iRedTea/NoDropX/wiki
+SpigotMC resource: https://www.spigotmc.org/resources/nodropx.111485/
 
 **Features**
 - Supports HEX Colors (MiniMessages and MD5 ChatColor)
