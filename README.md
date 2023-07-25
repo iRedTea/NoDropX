@@ -15,4 +15,4 @@ Give an no drop item: `/nodrop give [player] [item] (count)`
 - Developer API
 - Mods support (tested on Arclight 1.16.5)
 
-<img src="[https://i.imgur.com/vakBZX7.png](https://proxy.spigotmc.org/a1da28beda92bf426f485775a036edc27fd4cdd0?url=https%3A%2F%2Fi.imgur.com%2F7DdnANr.png)https://proxy.spigotmc.org/a1da28beda92bf426f485775a036edc27fd4cdd0?url=https%3A%2F%2Fi.imgur.com%2F7DdnANr.png"></img>
+<img src="[https://i.imgur.com/F7DdnANr.png"></img>
