@@ -1,2 +1,3 @@
 forceUseLegacy: false
 forceUseMD5Colors: false
+checkForUpdates: true

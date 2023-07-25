@@ -14,7 +14,7 @@ noExists: "<dark_red><bold>[!] <red>This player doesnt exists!"
 gui:
   title: "<bold>Personal storage"
   frame:
-    name: "&7"
+    name: "<gray>"
     material: GLASS_PANE
   prev:
     name: "<red>Previous"

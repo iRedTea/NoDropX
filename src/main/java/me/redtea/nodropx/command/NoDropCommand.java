@@ -31,7 +31,7 @@ public class NoDropCommand extends CommandBase {
     }
 
     @SubCommand("give")
-    @Permission("nodropx.give")
+    @Permission("R")
     @Completion({"#players", "#materials", "#range:1-64"})
     public void onGive(final CommandSender sender,
                        final Player player,

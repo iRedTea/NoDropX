@@ -34,8 +34,7 @@ import me.redtea.nodropx.service.respawn.RespawnService;
 import me.redtea.nodropx.service.respawn.impl.RespawnServiceImpl;
 import me.redtea.nodropx.service.storage.StorageService;
 import me.redtea.nodropx.service.storage.impl.StorageServiceImpl;
-import me.redtea.nodropxforgebridge.ApiProvider;
-import me.redtea.nodropxforgebridge.Nodropxforgebridge;
+import me.redtea.nodropx.util.UpdateChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -46,7 +45,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -132,13 +130,22 @@ public final class NoDropX extends JavaPlugin {
         commandManager.register(new NoDropCommand(messages, noDropAPI, guiFacade, this));
         bStatsInit();
         printCredits();
-
-        mod();
+        checkUpdates();
     }
 
-    //todo remove
-    private void mod() {
-        Nodropxforgebridge.noDropAPI = s -> getAPI().getCapacitySlots(s);
+
+    private void checkUpdates() {
+        if(!(getConfig().contains("checkForUpdates") && getConfig().getBoolean("checkForUpdates"))) {
+            return;
+        }
+        new UpdateChecker(this, 111485).getVersion(version -> {
+            if (this.getDescription().getVersion().equals(version)) {
+                getLogger().info("There is not a new update available.");
+            } else {
+                getLogger().info("There is a new update available: " + version);
+                getLogger().info(". Download it from https://www.spigotmc.org/resources/nodropx.111485/");
+            }
+        });
     }
 
 
