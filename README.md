@@ -15,10 +15,4 @@ Give an no drop item: `/nodrop give [player] [item] (count)`
 - Developer API
 - Mods support (tested on Arclight 1.16.5)
 
-**Coming soon**
-- /nodrop giveStorage - gives no drop to player no drop storage <br>
-- /nodrpp applyHand - set item in hand no drop <br>
-- add ItemSadder support
-
-
 <img src="https://i.imgur.com/7DdnANr.png"></img>
