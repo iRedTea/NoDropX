@@ -25,6 +25,7 @@ public class RespawnServiceImpl implements RespawnService {
         if(toRespawn.containsKey(player.getName())) {
             Pair[] pairs = toRespawn.get(player.getName());
             for(Pair pair : pairs) player.getInventory().setItem(pair.slot, pair.item);
+            toRespawn.remove(player.getName());
         }
     }
 
