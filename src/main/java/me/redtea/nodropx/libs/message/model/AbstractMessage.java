@@ -38,7 +38,6 @@ public abstract class AbstractMessage implements Message {
         parse();
         Audience audience = adventure.sender(sender);
         parsed.forEach(audience::sendMessage);
-
     }
 
     private Component cacheComponent = null;

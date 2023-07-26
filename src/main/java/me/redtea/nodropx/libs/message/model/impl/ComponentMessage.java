@@ -7,7 +7,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import java.util.List;
 
 public class ComponentMessage extends AbstractMessage {
-    private final MiniMessage mm = MiniMessage.get();
+    private final MiniMessage mm = MiniMessage.builder().build();
 
     public ComponentMessage(List<String> unparsed) {
         super(unparsed);

@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class LoreKyoriCosmetic implements CosmeticStrategy {
     private List<Component> lore;
-    private final MiniMessage mm = MiniMessage.get();
+    private final MiniMessage mm = MiniMessage.builder().build();
     @Override
     public void apply(ItemStack itemStack) {
         List<Component> lore = itemStack.lore();
