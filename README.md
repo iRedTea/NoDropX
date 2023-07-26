@@ -1,6 +1,7 @@
 <img src="https://i.imgur.com/AxYMos8.png)https://i.imgur.com/AxYMos8.png"></img>
 # NoDropX
 **Give no drop items!**
+<img src="https://i.imgur.com/7DdnANr.png"></img>
 
 The plugin will allow you to create items that will not drop out of your inventory at death!
 
@@ -19,4 +20,5 @@ SpigotMC resource: https://www.spigotmc.org/resources/nodropx.111485/
 - Mods support (tested on Arclight 1.16.5)
 - ItemsAdder support
 
-<img src="https://i.imgur.com/7DdnANr.png"></img>
+
+This plugin uses <a href="https://github.com/iRedTea/CarcadeX">CarcadeX</a> library
