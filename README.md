@@ -1,6 +1,7 @@
-<img src="https://i.imgur.com/AxYMos8.png)https://i.imgur.com/AxYMos8.png"></img>
+
 # NoDropX
 **Give no drop items!**
+<img src="https://i.imgur.com/AxYMos8.png)https://i.imgur.com/AxYMos8.png"></img>
 <img src="https://i.imgur.com/7DdnANr.png"></img>
 
 The plugin will allow you to create items that will not drop out of your inventory at death!
