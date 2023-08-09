@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class MaterialUtils {
-    public void remove(Inventory inventory, Material type, int amount) {
+    public static void remove(Inventory inventory, Material type, int amount) {
         if (amount <= 0) return;
         int size = inventory.getSize();
         for (int slot = 0; slot < size; slot++) {

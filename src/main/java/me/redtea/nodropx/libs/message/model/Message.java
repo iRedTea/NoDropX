@@ -1,7 +1,9 @@
 package me.redtea.nodropx.libs.message.model;
 
+import me.redtea.nodropx.util.MaterialUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
@@ -59,5 +61,9 @@ public interface Message extends ComponentLike {
     @NotNull
     default Message replaceAll(@NotNull Object from, @NotNull Object to) {
         return replaceAll(String.valueOf(from), String.valueOf(to));
+    }
+
+    default Material toMaterial() {
+        return Material.matchMaterial(asUnparsedString()) == null ? Material.STONE : Material.matchMaterial(asUnparsedString());
     }
 }

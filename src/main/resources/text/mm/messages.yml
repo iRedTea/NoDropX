@@ -17,13 +17,26 @@ noConsole: "<dark_red><bold>[!] <red>Only players can use it!"
 noExists: "<dark_red><bold>[!] <red>This player doesnt exists!"
 
 gui:
-  title: "<bold>Personal storage"
-  frame:
-    name: "<gray>"
-    material: GLASS_PANE
-  prev:
-    name: "<red>Previous"
-    material: ARROW
-  next:
-    name: "<red>Next"
-    material: ARROW
+  confirm:
+    title: "<bold>Confirm throw"
+    yesButton:
+      name: "<green>YES"
+      lore:
+        - "<gray>Confirm throw no drop item"
+      material: GREEN_WOOL
+    noButton:
+      name: "<red>NO"
+      lore:
+        - "<gray>Cancel throw no drop item"
+      material: RED_WOOL
+  personalStorage:
+    title: "<bold>Personal storage"
+    frame:
+      name: "<gray>"
+      material: GLASS_PANE
+    prev:
+      name: "<red>Previous"
+      material: ARROW
+    next:
+      name: "<red>Next"
+      material: ARROW

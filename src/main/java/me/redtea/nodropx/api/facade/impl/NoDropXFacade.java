@@ -5,6 +5,7 @@ import me.redtea.nodropx.api.facade.manipulator.StorageManipulator;
 import lombok.RequiredArgsConstructor;
 import me.redtea.nodropx.factory.item.NoDropItemFactory;
 import me.redtea.nodropx.libs.carcadex.repo.Repo;
+import me.redtea.nodropx.service.capasity.CapacityService;
 import me.redtea.nodropx.service.material.ItemStackService;
 import me.redtea.nodropx.service.nodrop.NoDropService;
 import me.redtea.nodropx.service.storage.StorageService;
@@ -24,7 +25,7 @@ public class NoDropXFacade implements NoDropAPI {
     private final NoDropService noDropService;
     private final NoDropItemFactory itemFactory;
     private final StorageService storageService;
-    private final Repo<String, List<Integer>> capacity;
+    private final CapacityService capacityService;
     private final ItemStackService itemStackService;
 
     @Override
@@ -75,8 +76,13 @@ public class NoDropXFacade implements NoDropAPI {
     }
 
     @Override
+    public @NotNull Collection<Integer> getCapacitySlots(ItemStack itemStack) {
+        return capacityService.get(itemStack);
+    }
+
+    @Override
     public @NotNull Collection<Integer> getCapacitySlots(Material material) {
-        return capacity.get(material.name()).orElse(new ArrayList<>());
+        return capacityService.get(material);
     }
 
     @Override

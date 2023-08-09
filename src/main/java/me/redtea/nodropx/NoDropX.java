@@ -10,23 +10,35 @@ import me.redtea.nodropx.factory.item.impl.NoDropItemFactoryImpl;
 import me.redtea.nodropx.factory.text.TextContext;
 import me.redtea.nodropx.factory.text.TextServicesFactory;
 import me.redtea.nodropx.factory.text.impl.TextServicesFactoryImpl;
-import me.redtea.nodropx.gui.facade.GuiFacade;
-import me.redtea.nodropx.gui.facade.impl.GuiFacadeImpl;
-import me.redtea.nodropx.gui.pages.StorageGui;
+import me.redtea.nodropx.folia.FoliaSupporter;
 import me.redtea.nodropx.libs.bstats.Metrics;
 import me.redtea.nodropx.libs.carcadex.repo.MutableRepo;
 import me.redtea.nodropx.libs.carcadex.repo.Repo;
-import me.redtea.nodropx.libs.carcadex.repo.impl.yaml.YamlRepo;
 import me.redtea.nodropx.libs.message.container.Messages;
 import me.redtea.nodropx.libs.message.verifier.impl.FileMessageVerifier;
+import me.redtea.nodropx.listener.ConfirmDropHandler;
 import me.redtea.nodropx.listener.InventoryHandler;
 import me.redtea.nodropx.listener.PlayerHandler;
+import me.redtea.nodropx.listener.menu.SinglePageGuiHandler;
+import me.redtea.nodropx.menu.CachedMenu;
+import me.redtea.nodropx.menu.Menu;
+import me.redtea.nodropx.menu.dropconfirm.DropConfirmMFGui;
+import me.redtea.nodropx.menu.facade.MenuFacade;
+import me.redtea.nodropx.menu.facade.impl.MenuFacadeImpl;
+import me.redtea.nodropx.menu.storage.pages.MFPageGui;
+import me.redtea.nodropx.menu.storage.singlepage.SinglePageController;
+import me.redtea.nodropx.menu.storage.singlepage.SinglePageGui;
 import me.redtea.nodropx.model.cosmetic.impl.DisplayNameCosmetic;
 import me.redtea.nodropx.model.materialprovider.impl.ItemStackProviderDefault;
 import me.redtea.nodropx.model.materialprovider.impl.ItemsAdderProvider;
 import me.redtea.nodropx.schema.ItemStackListSchema;
+import me.redtea.nodropx.service.capasity.CapacityService;
+import me.redtea.nodropx.service.capasity.impl.CapacityServiceImpl;
 import me.redtea.nodropx.service.cosmetic.CosmeticService;
 import me.redtea.nodropx.service.cosmetic.impl.CosmeticServiceImpl;
+import me.redtea.nodropx.service.dropconfirm.DropConfirmService;
+import me.redtea.nodropx.service.dropconfirm.impl.DropConfirmNull;
+import me.redtea.nodropx.service.dropconfirm.impl.DropConfirmServiceImpl;
 import me.redtea.nodropx.service.event.EventService;
 import me.redtea.nodropx.service.event.impl.EventServiceImpl;
 import me.redtea.nodropx.service.material.ItemStackService;
@@ -39,6 +51,8 @@ import me.redtea.nodropx.service.respawn.RespawnService;
 import me.redtea.nodropx.service.respawn.impl.RespawnServiceImpl;
 import me.redtea.nodropx.service.storage.StorageService;
 import me.redtea.nodropx.service.storage.impl.StorageServiceImpl;
+import me.redtea.nodropx.util.ConfigVerifier;
+import me.redtea.nodropx.util.FoliaSupportedUtils;
 import me.redtea.nodropx.util.UpdateChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -50,29 +64,34 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public final class NoDropX extends JavaPlugin {
     private static NoDropAPI noDropAPIInstance;
     @Getter
     private static NoDropX instance;
-
+    @Getter
     private Messages messages;
-    private CosmeticService cosmeticService;
+    private CosmeticService noDropCosmeticService;
     @Getter
     private boolean supportHEX;
     @Getter
     private boolean supportKyoriLore;
     @Getter
     private boolean supportItemsAdder;
-    private MutableRepo<UUID, List<ItemStack>> pagesRepo;
-    private Repo<String, List<Integer>> capacity;
-
+    private MutableRepo<UUID, List<ItemStack>> personalStorageRepo;
+    private CapacityService capacityService;
+    private MenuFacade menuFacade;
+    private NoDropService noDropService;
+    private ItemStackService itemStackService;
+    private DropConfirmService dropConfirmService;
+    private FoliaSupportedUtils foliaSupportedUtils;
 
     @Override
     public void onEnable() {
         instance = this;
-        saveDefaultConfig();
+        new ConfigVerifier().verifyDefaults(this);
+
+        foliaSupportedUtils = new FoliaSupportedUtils(this);
 
         TextServicesFactory textServicesFactory = new TextServicesFactoryImpl();
         TextContext textContext = textServicesFactory.create(this);
@@ -81,51 +100,43 @@ public final class NoDropX extends JavaPlugin {
         messages = supportKyoriLore ? Messages.of(textContext.getMessages()) : Messages.legacy(textContext.getMessages());
         messages.setVerifier(new FileMessageVerifier(getResource(textContext.getPath()), YamlConfiguration.loadConfiguration(textContext.getMessages()), textContext.getMessages()));
 
-        cosmeticService = new CosmeticServiceImpl();
-        cosmeticService.add(new DisplayNameCosmetic());
-        cosmeticService.add(textContext.getLoreStrategy());
-        cosmeticService.load(YamlConfiguration.loadConfiguration(textContext.getCosmetics()));
-
-        capacity = new YamlRepo<>(
-                new File(getDataFolder(), "capacity.yml").toPath(),
-                this,
-                conf -> conf.getKeys(false).stream().collect(Collectors.toMap(
-                        value -> value,
-                        conf::getIntegerList))
-        );
+        noDropCosmeticService = new CosmeticServiceImpl();
+        noDropCosmeticService.add(new DisplayNameCosmetic());
+        noDropCosmeticService.add(textContext.getLoreStrategy());
+        noDropCosmeticService.load(YamlConfiguration.loadConfiguration(textContext.getCosmetics()));
 
         NBTService nbtService = new Tr7zwNBTServiceImpl();
-        NoDropService noDropService = new NoDropServiceImpl(nbtService, cosmeticService);
+        noDropService = new NoDropServiceImpl(nbtService, noDropCosmeticService);
         NoDropItemFactory noDropItemFactory = new NoDropItemFactoryImpl(noDropService);
         EventService eventService = new EventServiceImpl(noDropService);
-        RespawnService respawnService = new RespawnServiceImpl(noDropService, capacity);
-        pagesRepo = Repo.<UUID, List<ItemStack>>builder()
+        capacityService = new CapacityServiceImpl(this);
+        RespawnService respawnService = new RespawnServiceImpl(noDropService, capacityService);
+
+        //EXPERIMENTAL! Folia support!
+        FoliaSupporter foliaSupporter = new FoliaSupporter();
+        foliaSupporter.run(respawnService, this);
+
+        personalStorageRepo = Repo.<UUID, List<ItemStack>>builder()
                 .autoSave(1000 * 60 * 15L)
                 .schema(new ItemStackListSchema(new File(getDataFolder(), "storage")))
                 .plugin(this)
                 .build();
-        ItemStackService itemStackService = initItemStackService();
+        itemStackService = initItemStackService();
+
+        dropConfirmService = getConfig().getBoolean("confirmThrowNoDropItem") ? new DropConfirmServiceImpl() : new DropConfirmNull();
+
+        menuFacade = initMenus();
+        StorageService storageService = new StorageServiceImpl(menuFacade, personalStorageRepo, noDropService);
 
 
-        GuiFacade guiFacade = new GuiFacadeImpl(
-                new StorageGui(messages, pagesRepo, noDropService, this, itemStackService)
-        );
-        StorageService storageService = new StorageServiceImpl(guiFacade, pagesRepo, noDropService);
 
-
-
-        NoDropAPI noDropAPI = new NoDropXFacade(noDropService, noDropItemFactory, storageService, capacity, itemStackService);
+        NoDropAPI noDropAPI = new NoDropXFacade(noDropService, noDropItemFactory, storageService, capacityService, itemStackService);
         noDropAPIInstance = noDropAPI;
 
 
-        Bukkit.getPluginManager().registerEvents(
-                new InventoryHandler(eventService),
-                this
-        );
-        Bukkit.getPluginManager().registerEvents(
-                new PlayerHandler(respawnService, eventService, guiFacade),
-                this
-        );
+        Bukkit.getPluginManager().registerEvents(new InventoryHandler(eventService, noDropService, dropConfirmService), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerHandler(respawnService, eventService, menuFacade), this);
+        Bukkit.getPluginManager().registerEvents(new ConfirmDropHandler(dropConfirmService, menuFacade), this);
 
         Bukkit.getServicesManager().register(NoDropAPI.class,
                 noDropAPI, this, ServicePriority.Normal);
@@ -136,10 +147,23 @@ public final class NoDropX extends JavaPlugin {
         commandManager.getMessageHandler().register("cmd.no.exists", sender -> messages.get("noExists").send(sender));
         commandManager.getMessageHandler().register("cmd.wrong.usage", sender -> messages.get("usage").send(sender));
         commandManager.getCompletionHandler().register("#materials", input -> itemStackService.allMaterials());
-        commandManager.register(new NoDropCommand(messages, noDropAPI, guiFacade, this, itemStackService));
+        commandManager.register(new NoDropCommand(messages, noDropAPI, menuFacade, this, itemStackService));
         bStatsInit();
         printCredits();
         checkUpdates();
+    }
+
+    private MenuFacade initMenus() {
+        CachedMenu personalStorageCachedMenu;
+        if(getConfig().getString("personalStorageType").equalsIgnoreCase("SINGLE_PAGE")) {
+            SinglePageGui singlePageGui = new SinglePageGui(messages, personalStorageRepo);
+            personalStorageCachedMenu = singlePageGui;
+            Bukkit.getPluginManager().registerEvents(new SinglePageGuiHandler(new SinglePageController(noDropService,
+                    singlePageGui, personalStorageRepo, foliaSupportedUtils), singlePageGui), this);
+        } else personalStorageCachedMenu =  new MFPageGui(messages, personalStorageRepo, noDropService, itemStackService, this);
+
+        Menu confirmMenu = new DropConfirmMFGui(messages, dropConfirmService);
+        return new MenuFacadeImpl(personalStorageCachedMenu, confirmMenu);
     }
 
     private ItemStackService initItemStackService() {
@@ -154,10 +178,10 @@ public final class NoDropX extends JavaPlugin {
     }
 
     private void checkUpdates() {
-        if(!(getConfig().contains("checkForUpdates") && getConfig().getBoolean("checkForUpdates"))) {
+        if(!getConfig().getBoolean("checkForUpdates")) {
             return;
         }
-        new UpdateChecker(this, 111485).getVersion(version -> {
+        new UpdateChecker(this, 111485, foliaSupportedUtils).getVersion(version -> {
             if (this.getDescription().getVersion().equals(version)) {
                 getLogger().info("There is not a new update available.");
             } else {
@@ -185,15 +209,16 @@ public final class NoDropX extends JavaPlugin {
     }
 
     public void onReload() {
-        pagesRepo.saveAll();
-        capacity.reload();
+        personalStorageRepo.saveAll();
+        menuFacade.clearAllCache();
+        capacityService.reload();
         messages.reload(YamlConfiguration.loadConfiguration(new File(getDataFolder(), "messages.yml")));
-        cosmeticService.load(YamlConfiguration.loadConfiguration(new File(getDataFolder(), "cosmetics.yml")));
+        noDropCosmeticService.load(YamlConfiguration.loadConfiguration(new File(getDataFolder(), "cosmetics.yml")));
     }
 
     @Override
     public void onDisable() {
-        pagesRepo.saveAll();
+        personalStorageRepo.saveAll();
     }
 
     public static NoDropAPI getAPI() {

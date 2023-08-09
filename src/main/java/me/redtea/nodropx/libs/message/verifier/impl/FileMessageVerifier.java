@@ -9,6 +9,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.Optional;
 
 public class FileMessageVerifier implements MessageVerifier {
@@ -24,8 +25,8 @@ public class FileMessageVerifier implements MessageVerifier {
     }
 
     @Override
-    public Optional<String> fromDefault(String key) {
-        Optional<String> o = Optional.ofNullable(defaultSection.getString(key));
+    public Optional<Object> fromDefault(String key) {
+        Optional<Object> o = Optional.ofNullable(defaultSection.get(key));
         o.ifPresent(s -> saveToMain(key, s));
         return o;
     }

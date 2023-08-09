@@ -6,6 +6,7 @@ description: Set no drop status to your items
 author: itzRedTea
 authors: [itzRedTea]
 softdepend: [ItemsAdder]
+folia-supported: true
 
 permissions:
   nodropx.give:

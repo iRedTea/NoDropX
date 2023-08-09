@@ -10,10 +10,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class MessagesImpl implements Messages {
     private Map<String, Message> messages;
@@ -53,9 +50,10 @@ public class MessagesImpl implements Messages {
     public Message get(String key) {
         if(!has(key)) {
             if(verifier != null) {
-                Optional<String> def = verifier.fromDefault(key);
+                Optional<Object> def = verifier.fromDefault(key);
                 if(def.isPresent()) {
-                    messages.put(key, factory.message(def.get()));
+                    if(def.get() instanceof List) messages.put(key, factory.message((List<String>) def.get()));
+                    else messages.put(key, factory.message((def.get().toString())));
                     return messages.get(key);
                 }
                 return NULL_MESSAGE;

@@ -2,8 +2,9 @@ package me.redtea.nodropx.listener;
 
 import lombok.RequiredArgsConstructor;
 import me.redtea.nodropx.api.event.NoDropItemThrownEvent;
-import me.redtea.nodropx.gui.facade.GuiFacade;
+import me.redtea.nodropx.menu.facade.MenuFacade;
 import me.redtea.nodropx.service.event.EventService;
+import me.redtea.nodropx.service.nodrop.NoDropService;
 import me.redtea.nodropx.service.respawn.RespawnService;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,9 +20,8 @@ import java.util.Optional;
 public class PlayerHandler implements Listener {
     private final RespawnService respawnService;
     private final EventService eventService;
-    private final GuiFacade guiFacade;
+    private final MenuFacade menuFacade;
 
-    //TODO check for armor
     @EventHandler
     public void onDrop(PlayerDropItemEvent event) {
         eventService.callThrownEvent(
@@ -44,7 +44,7 @@ public class PlayerHandler implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        guiFacade.clearCache(event.getPlayer());
+        menuFacade.clearCache(event.getPlayer());
     }
 
 }

@@ -2,7 +2,6 @@ package me.redtea.nodropx.api.facade;
 
 import lombok.val;
 import me.redtea.nodropx.api.facade.manipulator.StorageManipulator;
-import me.redtea.nodropx.util.MaterialUtils;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.HumanEntity;
@@ -77,6 +76,15 @@ public interface NoDropAPI {
      * @since 1.0.0
      */
     @NotNull StorageManipulator getStorageManipulator(@NotNull UUID playerUniqueId);
+
+    /**
+     * returns the slot numbers that no drop item with this itemStack saves at death
+     * @param itemStack itemStack to check
+     * @return numbers of saved slots
+     * @author redtea
+     * @since 1.0.3
+     */
+    @NotNull Collection<Integer> getCapacitySlots(ItemStack itemStack);
 
     /**
      * returns the slot numbers that no drop item with this material saves at death

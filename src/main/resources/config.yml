@@ -1,3 +1,10 @@
 forceUseLegacy: false
 forceUseMD5Colors: false
+forceUseFoliaPatches: false
+
 checkForUpdates: true
+
+confirmThrowNoDropItem: true
+
+#Can be SINGLE_PAGE or MULTI_PAGES
+personalStorageType: SINGLE_PAGE

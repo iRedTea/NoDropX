@@ -1,9 +1,12 @@
 package me.redtea.nodropx.service.respawn.impl;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import me.redtea.nodropx.api.event.NoDropItemDropOnDeathEvent;
 import me.redtea.nodropx.libs.carcadex.repo.Repo;
+import me.redtea.nodropx.service.capasity.CapacityService;
 import me.redtea.nodropx.service.nodrop.NoDropService;
 import me.redtea.nodropx.service.respawn.RespawnService;
 import org.bukkit.Bukkit;
@@ -12,12 +15,13 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class RespawnServiceImpl implements RespawnService {
     private final NoDropService noDropService;
     private final Map<String, Pair[]> toRespawn = new HashMap<>();
-    private final Repo<String, List<Integer>> capacity;
+    private final CapacityService capacityService;
 
 
     @Override
@@ -27,6 +31,7 @@ public class RespawnServiceImpl implements RespawnService {
             for(Pair pair : pairs) player.getInventory().setItem(pair.slot, pair.item);
             toRespawn.remove(player.getName());
         }
+        player.updateInventory();
     }
 
     @Override
@@ -60,12 +65,13 @@ public class RespawnServiceImpl implements RespawnService {
     }
 
     @AllArgsConstructor
+    @ToString
     static class Pair {
         int slot;
         ItemStack item;
     }
 
     private List<Integer> getProtectedSlots(ItemStack i) {
-        return capacity.get(i.getType().name()).orElse(new ArrayList<>());
+        return capacityService.get(i);
     }
 }

@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'me.redtea'
-version = '1.0.2b-SNAPSHOT-HOTFIX'
+version = '1.0.3-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -42,6 +42,7 @@ dependencies {
     implementation files("libs/MiniMessages.jar")
     implementation "dev.triumphteam:triumph-gui:3.1.2"
     compileOnly "com.github.LoneDev6:API-ItemsAdder:3.5.0b"
+    compileOnly files("libs/nodropxforgebridge-1.4.jar")
 }
 
 def targetJavaVersion = 8

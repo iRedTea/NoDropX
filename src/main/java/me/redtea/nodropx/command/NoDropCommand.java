@@ -6,7 +6,7 @@ import me.mattstudios.mf.annotations.*;
 import me.mattstudios.mf.base.CommandBase;
 import me.redtea.nodropx.NoDropX;
 import me.redtea.nodropx.api.facade.NoDropAPI;
-import me.redtea.nodropx.gui.facade.GuiFacade;
+import me.redtea.nodropx.menu.facade.MenuFacade;
 import me.redtea.nodropx.libs.message.container.Messages;
 import me.redtea.nodropx.service.material.ItemStackService;
 import org.bukkit.Bukkit;
@@ -27,7 +27,7 @@ import java.util.Date;
 public class NoDropCommand extends CommandBase {
     private final Messages messages;
     private final NoDropAPI noDropAPI;
-    private final GuiFacade guiFacade;
+    private final MenuFacade menuFacade;
     private final NoDropX plugin;
     private final ItemStackService itemStackService;
 
@@ -68,9 +68,9 @@ public class NoDropCommand extends CommandBase {
     @Permission("nodropx.giveStorage")
     @Completion({"#players", "#materials", "#range:1-64"})
     public void onGiveStorage(final CommandSender sender,
-                              String playerName,
+                              final String playerName,
                               final String material,
-                              @Optional Integer amount) {
+                              @Optional final Integer amount) {
         try {
             val item = noDropAPI.setNoDrop(itemStackService.get(material, amount == null || amount == 0 ? 1 : amount), true);
             val player = getOfflinePlayer(playerName);
@@ -82,11 +82,12 @@ public class NoDropCommand extends CommandBase {
             messages.get("giveToStorage.success")
                     .replaceAll("%item%", material)
                     .replaceAll("%player%", playerName)
-                    .replaceAll("%amount%", amount == null ? "0" : amount.toString())
+                    .replaceAll("%amount%", amount == null ? "1" : amount.toString())
                     .send(sender);
         } catch (Throwable e) {
             messages.get("giveToStorage.fail").send(sender);
         }
+
     }
 
     @SubCommand("applyHand")
@@ -101,13 +102,14 @@ public class NoDropCommand extends CommandBase {
     }
 
     @SubCommand("gui")
+    @Alias("storage")
     @Permission("nodropx.gui")
     public void onGui(final Player sender) {
-        guiFacade.openNoDropStorage(sender);
+        menuFacade.openPersonalStorage(sender);
     }
 
     @Nullable
-    private OfflinePlayer getOfflinePlayer(String name) {
+    private OfflinePlayer getOfflinePlayer(final String name) {
         for(OfflinePlayer player : Bukkit.getOfflinePlayers()) {
             if(player.getName() != null && player.getName().equalsIgnoreCase(name)) return player;
         }

@@ -1,15 +1,16 @@
-package me.redtea.nodropx.gui.pages;
+package me.redtea.nodropx.menu.storage.pages;
 
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.GuiItem;
 import dev.triumphteam.gui.guis.ScrollingGui;
 import lombok.RequiredArgsConstructor;
+import me.redtea.nodropx.menu.CachedMenu;
 import me.redtea.nodropx.libs.carcadex.repo.MutableRepo;
 import me.redtea.nodropx.libs.message.container.Messages;
 import me.redtea.nodropx.service.material.ItemStackService;
 import me.redtea.nodropx.service.nodrop.NoDropService;
-import me.redtea.nodropx.util.MaterialUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
@@ -22,13 +23,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public class StorageGui {
-    private final Map<UUID, ScrollingGui> cache = new HashMap<>();
+public class MFPageGui implements CachedMenu {
     private final Messages messages;
-    private final MutableRepo<UUID, List<ItemStack>> pagesRepo;
+    private final MutableRepo<UUID, List<ItemStack>> personalStorageRepo;
     private final NoDropService noDropService;
-    private final Plugin plugin;
     private final ItemStackService itemStackService;
+    private final Plugin plugin;
+
+    private final Map<UUID, ScrollingGui> cache = new HashMap<>();
 
     public void open(Player player) {
         if(cache.containsKey(player.getUniqueId())) {
@@ -37,7 +39,7 @@ public class StorageGui {
         }
 
         ScrollingGui gui = Gui.scrolling()
-                .title(messages.get("gui.title").asComponent())
+                .title(messages.get("gui.personalStorage.title").asComponent())
                 .rows(6)
                 .pageSize(45)
                 .disableAllInteractions()
@@ -46,16 +48,16 @@ public class StorageGui {
         setButtons(gui);
         setAction(gui);
         setOnClose(gui);
-        for(ItemStack item : pagesRepo.get(player.getUniqueId()).orElse(new ArrayList<>())) {
+        for(ItemStack item : personalStorageRepo.get(player.getUniqueId()).orElse(new ArrayList<>())) {
             gui.addItem(ItemBuilder.from(item).asGuiItem());
         }
 
-        gui.open(player);
         cache.put(player.getUniqueId(), gui);
+        gui.open(player);
     }
 
     private void setOnClose(ScrollingGui gui) {
-        gui.setCloseGuiAction(event -> pagesRepo.update(event.getPlayer().getUniqueId(), gui.getPageItems().stream()
+        gui.setCloseGuiAction(event -> personalStorageRepo.update(event.getPlayer().getUniqueId(), gui.getPageItems().stream()
                 .map(GuiItem::getItemStack)
                 .collect(Collectors.toList())));
     }
@@ -110,21 +112,21 @@ public class StorageGui {
     private void setFrame(ScrollingGui gui) {
         for(int i = 1; i < 10; ++i) {
             gui.setItem(6, i, ItemBuilder.from(
-                    itemStackService.get(messages.get("gui.frame.material").asUnparsedString(), 1)
-            ).name(messages.get("gui.frame.name").asComponent()).asGuiItem(event -> event.setCancelled(true)));
+                    itemStackService.get(messages.get("gui.personalStorage.frame.material").asUnparsedString(), 1)
+            ).name(messages.get("gui.personalStorage.frame.name").asComponent()).asGuiItem(event -> event.setCancelled(true)));
         }
     }
 
     private void setButtons(ScrollingGui gui) {
         gui.setItem(6, 3, ItemBuilder.from(
-                itemStackService.get(messages.get("gui.prev.material").asUnparsedString(), 1)
-        ).name(messages.get("gui.prev.name").asComponent()).asGuiItem(event -> {
+                itemStackService.get(messages.get("gui.personalStorage.prev.material").asUnparsedString(), 1)
+        ).name(messages.get("gui.personalStorage.prev.name").asComponent()).asGuiItem(event -> {
             gui.previous();
             event.setCancelled(true);
         }));
         gui.setItem(6, 7, ItemBuilder.from(
-                itemStackService.get(messages.get("gui.next.material").asUnparsedString(), 1)
-        ).name(messages.get("gui.next.name").asComponent()).asGuiItem(event -> {
+                itemStackService.get(messages.get("gui.personalStorage.next.material").asUnparsedString(), 1)
+        ).name(messages.get("gui.personalStorage.next.name").asComponent()).asGuiItem(event -> {
             gui.next();
             event.setCancelled(true);
         }));
@@ -135,6 +137,10 @@ public class StorageGui {
     }
 
     public void clearAllCache() {
+        cache.forEach((k, v) -> {
+            Player player = Bukkit.getPlayer(k);
+            if(player != null) v.close(player);
+        });
         cache.clear();
     }
 

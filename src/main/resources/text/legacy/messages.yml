@@ -17,13 +17,26 @@ noConsole: "&4&l[!] &cOnly players can use it!"
 noExists: "&4&l[!] &cThis player doesnt exists!"
 
 gui:
-  title: "&lPersonal storage"
-  frame:
-    name: "&7"
-    material: GLASS_PANE
-  prev:
-    name: "&cPrevious"
-    material: ARROW
-  next:
-    name: "&cNext"
-    material: ARROW
+  confirm:
+    title: "&lConfirm drop"
+    yesButton:
+      name: "&aYES"
+      lore:
+        - "&7Confirm throw no drop item"
+      material: ARROW
+    noButton:
+      name: "&cNO"
+      lore:
+        - "&7Cancel throw no drop item"
+      material: ARROW
+  personalStorage:
+    title: "&lPersonal storage"
+    frame:
+      name: "&7"
+      material: GLASS_PANE
+    prev:
+      name: "&cPrevious"
+      material: ARROW
+    next:
+      name: "&cNext"
+      material: ARROW
