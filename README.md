@@ -1,4 +1,4 @@
-<img src="https://i.imgur.com/AxYMos8.png)https://i.imgur.com/AxYMos8.png"></img>
+<img src="[https://i.imgur.com/AxYMos8.png)https://i.imgur.com/AxYMos8.png](https://i.imgur.com/4KNCfzl.png)"></img>
 <img src="https://i.imgur.com/7DdnANr.png"></img>
 
 # NoDropX
@@ -13,13 +13,14 @@ SpigotMC resource: https://www.spigotmc.org/resources/nodropx.111485/
 
 **Features**
 - Supports HEX Colors (MiniMessages and MD5 ChatColor)
-- Supports all versions from 1.12.2 to 1.20.1 (Spigot/Paper)
+- Supports all versions from 1.12.2 to 1.20.1 (Spigot/Paper/Folia)
 - No drop items storage: `/nodrop gui`
 - Fully customization
 - Items that protect other slots from death
 - Developer API
 - Mods support (tested on Arclight 1.16.5)
 - ItemsAdder support
+- Folia support
 
 
 This plugin uses <a href="https://github.com/iRedTea/CarcadeX">CarcadeX</a> library
