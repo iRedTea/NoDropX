@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import me.redtea.nodropx.libs.carcadex.repo.MutableRepo;
 import me.redtea.nodropx.libs.message.container.Messages;
 import me.redtea.nodropx.menu.CachedMenu;
+import me.redtea.nodropx.util.MD5ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -25,7 +26,7 @@ public class SinglePageGui implements CachedMenu {
             player.openInventory(cache.get(player.getUniqueId()));
             return;
         }
-        Inventory gui = Bukkit.createInventory(null, 54, messages.get("gui.personalStorage.title").asComponent());
+        Inventory gui = Bukkit.createInventory(null, 54, MD5ColorUtils.translateHexColorCodes(messages.get("gui.personalStorage.title").asUnparsedString()));
         for(ItemStack item : personalStorageRepo.get(player.getUniqueId()).orElse(new ArrayList<>())) if(item != null) gui.addItem(item);
 
         cache.put(player.getUniqueId(), gui);

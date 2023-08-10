@@ -6,5 +6,6 @@ checkForUpdates: true
 
 confirmThrowNoDropItem: true
 
+#Single did not supports minimessages!
 #Can be SINGLE_PAGE or MULTI_PAGES
 personalStorageType: SINGLE_PAGE

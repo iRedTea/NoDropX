@@ -25,15 +25,18 @@ public class FoliaSupporter {
 
     @SneakyThrows
     public void run(RespawnService respawnService, Plugin plugin) {
-        String version = ((JsonObject) new JsonParser().parse(new FileReader("version_history.json"))).get("currentVersion").getAsString();
-        if(!version.toLowerCase().contains("folia") && !plugin.getConfig().getBoolean("forceUseFoliaPatches")) {
-            return;
-        }
-        runningOnFolia = true;
-        plugin.getLogger().info("Found Folia! Applying patches for this...");
-        this.respawnService = respawnService;
-        Bukkit.getPluginManager().registerEvents(new FoliaDeathListener(), plugin);
-        plugin.getLogger().info("Patches for Folia successfully applied!");
+        try {
+            String version = ((JsonObject) new JsonParser().parse(new FileReader("version_history.json"))).get("currentVersion").getAsString();
+            if(!version.toLowerCase().contains("folia") && !plugin.getConfig().getBoolean("forceUseFoliaPatches")) {
+                return;
+            }
+            runningOnFolia = true;
+            plugin.getLogger().info("Found Folia! Applying patches for this...");
+            this.respawnService = respawnService;
+            Bukkit.getPluginManager().registerEvents(new FoliaDeathListener(), plugin);
+            plugin.getLogger().info("Patches for Folia successfully applied!");
+        } catch (Throwable ignored) {}
+
     }
 
 
