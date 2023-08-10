@@ -1,9 +1,7 @@
-<<<<<<< HEAD
 # NoDropX
 Give no drop items!
 =======
-<img src="[https://i.imgur.com/AxYMos8.png)https://i.imgur.com/AxYMos8.png](https://i.imgur.com/4KNCfzl.png)"></img>
-<img src="https://i.imgur.com/7DdnANr.png"></img>
+<img src="https://i.imgur.com/4KNCfzl.png"></img>
 
 # NoDropX
 **Give no drop items!**
@@ -28,4 +26,3 @@ SpigotMC resource: https://www.spigotmc.org/resources/nodropx.111485/
 
 
 This plugin uses <a href="https://github.com/iRedTea/CarcadeX">CarcadeX</a> library
->>>>>>> c885fc87da46aa8dfde40471c5bf17c2a0ffa762
