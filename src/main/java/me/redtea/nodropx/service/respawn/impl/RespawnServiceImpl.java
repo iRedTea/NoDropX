@@ -7,6 +7,7 @@ import lombok.ToString;
 import me.redtea.nodropx.api.event.NoDropItemDropOnDeathEvent;
 import me.redtea.nodropx.libs.carcadex.repo.Repo;
 import me.redtea.nodropx.service.capasity.CapacityService;
+import me.redtea.nodropx.service.dropconfirm.DropConfirmService;
 import me.redtea.nodropx.service.nodrop.NoDropService;
 import me.redtea.nodropx.service.respawn.RespawnService;
 import org.bukkit.Bukkit;
@@ -31,7 +32,6 @@ public class RespawnServiceImpl implements RespawnService {
             for(Pair pair : pairs) player.getInventory().setItem(pair.slot, pair.item);
             toRespawn.remove(player.getName());
         }
-        player.updateInventory();
     }
 
     @Override

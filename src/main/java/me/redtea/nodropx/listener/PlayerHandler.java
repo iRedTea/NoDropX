@@ -3,6 +3,7 @@ package me.redtea.nodropx.listener;
 import lombok.RequiredArgsConstructor;
 import me.redtea.nodropx.api.event.NoDropItemThrownEvent;
 import me.redtea.nodropx.menu.facade.MenuFacade;
+import me.redtea.nodropx.service.dropconfirm.DropConfirmService;
 import me.redtea.nodropx.service.event.EventService;
 import me.redtea.nodropx.service.nodrop.NoDropService;
 import me.redtea.nodropx.service.respawn.RespawnService;
@@ -14,7 +15,10 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 public class PlayerHandler implements Listener {

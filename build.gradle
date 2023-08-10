@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'me.redtea'
-version = '1.0.3a-SNAPSHOT'
+version = '1.0.3b-SNAPSHOT'
 
 repositories {
     mavenCentral()

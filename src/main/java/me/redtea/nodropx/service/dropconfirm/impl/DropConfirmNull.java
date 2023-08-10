@@ -18,4 +18,14 @@ public class DropConfirmNull implements DropConfirmService {
     public void resetConfirm(Player player) {
 
     }
+
+    @Override
+    public void forceConfirm(Player player) {
+
+    }
+
+    @Override
+    public void removeForceConfirm(Player player) {
+
+    }
 }

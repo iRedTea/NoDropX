@@ -105,6 +105,7 @@ public final class NoDropX extends JavaPlugin {
         noDropCosmeticService.add(textContext.getLoreStrategy());
         noDropCosmeticService.load(YamlConfiguration.loadConfiguration(textContext.getCosmetics()));
 
+        dropConfirmService = getConfig().getBoolean("confirmThrowNoDropItem") ? new DropConfirmServiceImpl() : new DropConfirmNull();
         NBTService nbtService = new Tr7zwNBTServiceImpl();
         noDropService = new NoDropServiceImpl(nbtService, noDropCosmeticService);
         NoDropItemFactory noDropItemFactory = new NoDropItemFactoryImpl(noDropService);
@@ -123,7 +124,6 @@ public final class NoDropX extends JavaPlugin {
                 .build();
         itemStackService = initItemStackService();
 
-        dropConfirmService = getConfig().getBoolean("confirmThrowNoDropItem") ? new DropConfirmServiceImpl() : new DropConfirmNull();
 
         menuFacade = initMenus();
         StorageService storageService = new StorageServiceImpl(menuFacade, personalStorageRepo, noDropService);
@@ -147,7 +147,7 @@ public final class NoDropX extends JavaPlugin {
         commandManager.getMessageHandler().register("cmd.no.exists", sender -> messages.get("noExists").send(sender));
         commandManager.getMessageHandler().register("cmd.wrong.usage", sender -> messages.get("usage").send(sender));
         commandManager.getCompletionHandler().register("#materials", input -> itemStackService.allMaterials());
-        commandManager.register(new NoDropCommand(messages, noDropAPI, menuFacade, this, itemStackService));
+        commandManager.register(new NoDropCommand(messages, noDropAPI, menuFacade, this, itemStackService, dropConfirmService));
         bStatsInit();
         printCredits();
         checkUpdates();

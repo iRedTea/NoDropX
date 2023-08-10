@@ -4,8 +4,10 @@ forceUseFoliaPatches: false
 
 checkForUpdates: true
 
-confirmThrowNoDropItem: true
+# Not recommended on Forge servers!
+# Use it on your own risk
+confirmThrowNoDropItem: false
 
 #Single did not supports minimessages!
-#Can be SINGLE_PAGE or MULTI_PAGES
+#Can be SINGLE_PAGE or MULTI_PAGES (Use MULTI_PAGES on your own risk)
 personalStorageType: SINGLE_PAGE

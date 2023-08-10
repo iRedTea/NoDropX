@@ -8,8 +8,10 @@ import me.redtea.nodropx.NoDropX;
 import me.redtea.nodropx.api.facade.NoDropAPI;
 import me.redtea.nodropx.menu.facade.MenuFacade;
 import me.redtea.nodropx.libs.message.container.Messages;
+import me.redtea.nodropx.service.dropconfirm.DropConfirmService;
 import me.redtea.nodropx.service.material.ItemStackService;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -30,6 +32,7 @@ public class NoDropCommand extends CommandBase {
     private final MenuFacade menuFacade;
     private final NoDropX plugin;
     private final ItemStackService itemStackService;
+    private final DropConfirmService confirmService;
 
     @Default
     public void onDefault(final CommandSender sender) {
@@ -90,6 +93,60 @@ public class NoDropCommand extends CommandBase {
 
     }
 
+    @SubCommand("ignoreConfirm")
+    @Permission("nodropx.ignoreConfirm")
+    public void onIgnoreConfirm(final CommandSender sender, @Optional Player target) {
+        if(target == null) {
+            if(!(sender instanceof Player)) {
+                sender.sendMessage("player only");
+                return;
+            } else {
+                confirmService.forceConfirm((Player) sender);
+            }
+        } else {
+            confirmService.forceConfirm(target);
+        }
+    }
+
+    @SubCommand("ignoreConfirmTimed")
+    @Permission("nodropx.ignoreConfirm.timed")
+    public void onIgnoreConfirmTimed(final CommandSender sender, Integer sec, @Optional Player target) {
+        if(target == null) {
+            if(!(sender instanceof Player)) {
+                sender.sendMessage("player only");
+                return;
+            } else {
+                confirmService.forceConfirm((Player) sender);
+                try {
+                    Bukkit.getScheduler().runTaskLater(plugin,() -> confirmService.removeForceConfirm((Player) sender),20L*sec);
+                } catch (UnsupportedOperationException e) {
+                    sender.sendMessage(ChatColor.RED + "This operation didn't supports on your environment");
+                }
+            }
+        } else {
+            confirmService.forceConfirm(target);
+            try {
+                Bukkit.getScheduler().runTaskLater(plugin,() -> confirmService.removeForceConfirm(target),20L*sec);
+            } catch (UnsupportedOperationException e) {
+                sender.sendMessage(ChatColor.RED + "This operation didn't supports on your environment");
+            }
+        }
+    }
+
+    @SubCommand("noIgnoreConfirm")
+    @Permission("nodropx.noIgnoreConfirm")
+    public void onNoIgnoreConfirm(final CommandSender sender, @Optional Player target) {
+        if(target == null) {
+            if(!(sender instanceof Player)) {
+                sender.sendMessage("player only");
+                return;
+            } else {
+                confirmService.removeForceConfirm((Player) sender);
+            }
+        } else {
+            confirmService.removeForceConfirm(target);
+        }
+    }
     @SubCommand("applyHand")
     @Permission("nodropx.applyhand")
     public void onApplyHand(final Player sender) {

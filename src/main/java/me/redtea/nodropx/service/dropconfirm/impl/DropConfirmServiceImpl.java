@@ -9,8 +9,10 @@ import java.util.UUID;
 
 public class DropConfirmServiceImpl implements DropConfirmService {
     private Set<UUID> confirmed = new HashSet<>();
+    private Set<UUID> force = new HashSet<>();
     @Override
     public boolean isConfirmed(Player player) {
+        if(force.contains(player.getUniqueId()) || player.isDead()) return true;
         return confirmed.contains(player.getUniqueId());
     }
 
@@ -22,6 +24,16 @@ public class DropConfirmServiceImpl implements DropConfirmService {
     @Override
     public void resetConfirm(Player player) {
         confirmed.remove(player.getUniqueId());
+    }
+
+    @Override
+    public void forceConfirm(Player player) {
+        force.add(player.getUniqueId());
+    }
+
+    @Override
+    public void removeForceConfirm(Player player) {
+        force.remove(player.getUniqueId());
     }
 
 }
