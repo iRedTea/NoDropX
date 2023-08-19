@@ -209,7 +209,7 @@ public final class NoDropX extends JavaPlugin {
     }
 
     private void printCreditLine(String s) {
-        Bukkit.getLogger().info(ChatColor.translateAlternateColorCodes('&', s));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', s));
     }
 
     public void onReload() {
