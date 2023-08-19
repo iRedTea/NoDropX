@@ -129,7 +129,6 @@ public final class NoDropX extends JavaPlugin {
         StorageService storageService = new StorageServiceImpl(menuFacade, personalStorageRepo, noDropService);
 
 
-
         NoDropAPI noDropAPI = new NoDropXFacade(noDropService, noDropItemFactory, storageService, capacityService, itemStackService);
         noDropAPIInstance = noDropAPI;
 
@@ -155,14 +154,15 @@ public final class NoDropX extends JavaPlugin {
 
     private MenuFacade initMenus() {
         CachedMenu personalStorageCachedMenu;
-        if(getConfig().getString("personalStorageType").equalsIgnoreCase("SINGLE_PAGE")) {
+        if (getConfig().getString("personalStorageType").equalsIgnoreCase("SINGLE_PAGE")) {
             SinglePageGui singlePageGui = new SinglePageGui(messages, personalStorageRepo);
             personalStorageCachedMenu = singlePageGui;
             Bukkit.getPluginManager().registerEvents(new SinglePageGuiHandler(new SinglePageController(noDropService,
                     singlePageGui, personalStorageRepo, foliaSupportedUtils), singlePageGui), this);
-        } else personalStorageCachedMenu =  new MFPageGui(messages, personalStorageRepo, noDropService, itemStackService, this);
+        } else
+            personalStorageCachedMenu = new MFPageGui(messages, personalStorageRepo, noDropService, itemStackService, this);
 
-        Menu confirmMenu = new DropConfirmMFGui(messages, dropConfirmService);
+        Menu confirmMenu = new DropConfirmMFGui(messages, dropConfirmService, this);
         return new MenuFacadeImpl(personalStorageCachedMenu, confirmMenu);
     }
 
@@ -178,7 +178,7 @@ public final class NoDropX extends JavaPlugin {
     }
 
     private void checkUpdates() {
-        if(!getConfig().getBoolean("checkForUpdates")) {
+        if (!getConfig().getBoolean("checkForUpdates")) {
             return;
         }
         new UpdateChecker(this, 111485, foliaSupportedUtils).getVersion(version -> {
@@ -199,13 +199,17 @@ public final class NoDropX extends JavaPlugin {
 
 
     private void printCredits() {
-        Bukkit.getLogger().info(ChatColor.GREEN + "************************************************************");
-        Bukkit.getLogger().info(ChatColor.GREEN + "* " + ChatColor.YELLOW + "NoDropX version " + ChatColor.GOLD + getDescription().getVersion() + ChatColor.GRAY + " (uses CarcadeX v. 1.0.7)");
-        Bukkit.getLogger().info(ChatColor.GREEN + "* " + ChatColor.YELLOW + "By " + ChatColor.RED + "itzRedTea");
-        Bukkit.getLogger().info(ChatColor.GREEN + "* "+ ChatColor.YELLOW + "Detected bukkit version " + ChatColor.GOLD + Bukkit.getBukkitVersion());
-        Bukkit.getLogger().info(ChatColor.GREEN + "* "+ ChatColor.YELLOW + "support HEX colors " + (supportHEX ? ChatColor.DARK_GREEN + "YES" : ChatColor.DARK_RED + "NO"));
-        Bukkit.getLogger().info(ChatColor.GREEN + "* "+ ChatColor.YELLOW + "support Kyori as lore " + (supportKyoriLore ? ChatColor.DARK_GREEN + "YES" : ChatColor.DARK_RED + "NO"));
-        Bukkit.getLogger().info(ChatColor.GREEN + "************************************************************");
+        printCreditLine("&a************************************************************");
+        printCreditLine("&a* &eNoDropX version &6" + getDescription().getVersion() + "&7 (uses CarcadeX v. 1.0.7)");
+        printCreditLine("&a* &eBy &citzRedTea");
+        printCreditLine("&a* &eDetected bukkit version &6" + Bukkit.getBukkitVersion());
+        printCreditLine("&a* &esupport HEX colors " + (supportHEX ? "&2YES" : "&4NO"));
+        printCreditLine("&a* &esupport Kyori as lore " + (supportKyoriLore ? "&2YES" : "&4NO"));
+        printCreditLine("&a************************************************************");
+    }
+
+    private void printCreditLine(String s) {
+        Bukkit.getLogger().info(ChatColor.translateAlternateColorCodes('&', s));
     }
 
     public void onReload() {
