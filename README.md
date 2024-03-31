@@ -1,7 +1,7 @@
 # NoDropX
 Give no drop items!
 =======
-<img src="https://i.imgur.com/4KNCfzl.png"></img>
+<img src="https://i.imgur.com/PMxKZEP.png"></img>
 
 # NoDropX
 **Give no drop items!**
