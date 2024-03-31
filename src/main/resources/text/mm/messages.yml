@@ -1,6 +1,6 @@
 usage:
   - "<gray>[ <green>Usage of command <yellow>/nodrop <gray>]"
-  - "<gray>| <green>/give [player] [item] (amount) <yellow>- give no drop item"
+  - "<gray>| <green>/nodrop give [player] [item] (amount) <yellow>- give no drop item"
 give:
   fail: "<dark_red><bold>[!] <red>Fail! Check item type for valid."
   success: "<green><bold>[!] <reset><green>Gived <yellow>%item%<green> to <yellow>%player%<green> amount <yellow>%amount%<green>!"

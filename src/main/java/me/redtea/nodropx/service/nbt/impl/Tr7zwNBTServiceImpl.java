@@ -6,17 +6,19 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 public class Tr7zwNBTServiceImpl implements NBTService {
+
+
     @Override
-    public void setNoDropTag(ItemStack item, boolean isNoDrop) {
+    public void setBoolTag(ItemStack item, String tag, boolean value) {
         NBTItem nbtItem = new NBTItem(item);
-        nbtItem.setBoolean("isNoDrop", true);
+        nbtItem.setBoolean(tag, value);
         nbtItem.applyNBT(item);
     }
 
     @Override
-    public boolean getNoDropTag(ItemStack item) {
+    public boolean getBoolTag(ItemStack item, String tag) {
         if(item == null || item.getType() == Material.AIR) return false;
         NBTItem nbtItem = new NBTItem(item);
-        return nbtItem.hasTag("isNoDrop") && nbtItem.getBoolean("isNoDrop");
+        return nbtItem.hasTag(tag) && nbtItem.getBoolean(tag);
     }
 }

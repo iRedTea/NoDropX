@@ -5,6 +5,7 @@ import me.redtea.nodropx.api.facade.manipulator.StorageManipulator;
 import lombok.RequiredArgsConstructor;
 import me.redtea.nodropx.factory.item.NoDropItemFactory;
 import me.redtea.nodropx.libs.carcadex.repo.Repo;
+import me.redtea.nodropx.service.allnodrop.AllNoDropService;
 import me.redtea.nodropx.service.capasity.CapacityService;
 import me.redtea.nodropx.service.material.ItemStackService;
 import me.redtea.nodropx.service.nodrop.NoDropService;
@@ -27,6 +28,7 @@ public class NoDropXFacade implements NoDropAPI {
     private final StorageService storageService;
     private final CapacityService capacityService;
     private final ItemStackService itemStackService;
+    private final AllNoDropService allNoDropService;
 
     @Override
     public ItemStack setNoDrop(@NotNull ItemStack item, boolean isNoDrop) {
@@ -98,5 +100,26 @@ public class NoDropXFacade implements NoDropAPI {
     @Override
     public @NotNull ItemStack getNoDrop(@NotNull String material, int amount) {
         return setNoDrop(itemStackService.get(material, amount), true);
+    }
+
+    @Override
+    public ItemStack setAllNoDrop(@NotNull ItemStack item, boolean isAllNoDrop) {
+        allNoDropService.setAllNoDrop(item, isAllNoDrop);
+        return item;
+    }
+
+    @Override
+    public boolean isAllNoDrop(@NotNull ItemStack item) {
+        return allNoDropService.isAllNoDrop(item);
+    }
+
+    @Override
+    public ItemStack getAllNoDrop(@NotNull String material, int amount) {
+        return setAllNoDrop(itemStackService.get(material, amount), true);
+    }
+
+    @Override
+    public void giveAllNoDrop(HumanEntity entity, @NotNull String material, int amount) {
+        entity.getInventory().addItem(getAllNoDrop(material, amount));
     }
 }

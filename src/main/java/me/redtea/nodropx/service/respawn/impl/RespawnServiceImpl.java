@@ -6,11 +6,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import me.redtea.nodropx.api.event.NoDropItemDropOnDeathEvent;
 import me.redtea.nodropx.libs.carcadex.repo.Repo;
+import me.redtea.nodropx.service.allnodrop.AllNoDropService;
 import me.redtea.nodropx.service.capasity.CapacityService;
 import me.redtea.nodropx.service.dropconfirm.DropConfirmService;
 import me.redtea.nodropx.service.nodrop.NoDropService;
 import me.redtea.nodropx.service.respawn.RespawnService;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RespawnServiceImpl implements RespawnService {
     private final NoDropService noDropService;
+    private final AllNoDropService allNoDropService;
     private final Map<String, Pair[]> toRespawn = new HashMap<>();
     private final CapacityService capacityService;
 
@@ -38,9 +41,11 @@ public class RespawnServiceImpl implements RespawnService {
     public void saveItemsBeforeDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
         Set<Integer> noDropSlots = new HashSet<>();
+        boolean isHasAllNoDropItem = event.getDrops().stream().anyMatch(allNoDropService::isAllNoDrop);
         for(int i = 0; i < player.getInventory().getSize(); ++i) {
             ItemStack item = player.getInventory().getItem(i);
-            if(!noDropService.isNoDrop(item)) continue;
+            if(!(noDropService.isNoDrop(item) || isHasAllNoDropItem) || item == null ||
+                item.getType() == Material.AIR) continue;
             NoDropItemDropOnDeathEvent callingEvent = new NoDropItemDropOnDeathEvent(
                     player,
                     item

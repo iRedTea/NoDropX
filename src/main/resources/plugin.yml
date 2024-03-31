@@ -11,6 +11,8 @@ folia-supported: true
 permissions:
   nodropx.give:
     description: "Allows give no drop items"
+  nodropx.giveallnodrop:
+    description: "Allows give allnodrop items"
   nodropx.reload:
     description: "Allows reload the plugin"
   nodropx.gui:

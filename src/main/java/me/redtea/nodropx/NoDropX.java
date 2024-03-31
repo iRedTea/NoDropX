@@ -1,7 +1,8 @@
 package me.redtea.nodropx;
 
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 import lombok.Getter;
-import me.mattstudios.mf.base.CommandManager;
 import me.redtea.nodropx.api.facade.NoDropAPI;
 import me.redtea.nodropx.api.facade.impl.NoDropXFacade;
 import me.redtea.nodropx.command.NoDropCommand;
@@ -32,6 +33,8 @@ import me.redtea.nodropx.model.cosmetic.impl.DisplayNameCosmetic;
 import me.redtea.nodropx.model.materialprovider.impl.ItemStackProviderDefault;
 import me.redtea.nodropx.model.materialprovider.impl.ItemsAdderProvider;
 import me.redtea.nodropx.schema.ItemStackListSchema;
+import me.redtea.nodropx.service.allnodrop.AllNoDropService;
+import me.redtea.nodropx.service.allnodrop.impl.AllNoDropServiceImpl;
 import me.redtea.nodropx.service.capasity.CapacityService;
 import me.redtea.nodropx.service.capasity.impl.CapacityServiceImpl;
 import me.redtea.nodropx.service.cosmetic.CosmeticService;
@@ -56,13 +59,16 @@ import me.redtea.nodropx.util.FoliaSupportedUtils;
 import me.redtea.nodropx.util.UpdateChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
+import tech.carcadex.kotlinbukkitkit.commands.manager.CommandManager;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public final class NoDropX extends JavaPlugin {
@@ -111,7 +117,8 @@ public final class NoDropX extends JavaPlugin {
         NoDropItemFactory noDropItemFactory = new NoDropItemFactoryImpl(noDropService);
         EventService eventService = new EventServiceImpl(noDropService);
         capacityService = new CapacityServiceImpl(this);
-        RespawnService respawnService = new RespawnServiceImpl(noDropService, capacityService);
+        AllNoDropService allNoDropService = new AllNoDropServiceImpl(nbtService);
+        RespawnService respawnService = new RespawnServiceImpl(noDropService, allNoDropService, capacityService);
 
         //EXPERIMENTAL! Folia support!
         FoliaSupporter foliaSupporter = new FoliaSupporter();
@@ -129,7 +136,9 @@ public final class NoDropX extends JavaPlugin {
         StorageService storageService = new StorageServiceImpl(menuFacade, personalStorageRepo, noDropService);
 
 
-        NoDropAPI noDropAPI = new NoDropXFacade(noDropService, noDropItemFactory, storageService, capacityService, itemStackService);
+
+        NoDropAPI noDropAPI = new NoDropXFacade(noDropService, noDropItemFactory, storageService, capacityService,
+                itemStackService, allNoDropService);
         noDropAPIInstance = noDropAPI;
 
 
@@ -140,13 +149,26 @@ public final class NoDropX extends JavaPlugin {
         Bukkit.getServicesManager().register(NoDropAPI.class,
                 noDropAPI, this, ServicePriority.Normal);
 
-        CommandManager commandManager = new CommandManager(this);
-        commandManager.getMessageHandler().register("cmd.no.permission", sender -> messages.get("noPerms").send(sender));
-        commandManager.getMessageHandler().register("cmd.no.console", sender -> messages.get("noConsole").send(sender));
-        commandManager.getMessageHandler().register("cmd.no.exists", sender -> messages.get("noExists").send(sender));
-        commandManager.getMessageHandler().register("cmd.wrong.usage", sender -> messages.get("usage").send(sender));
-        commandManager.getCompletionHandler().register("#materials", input -> itemStackService.allMaterials());
-        commandManager.register(new NoDropCommand(messages, noDropAPI, menuFacade, this, itemStackService, dropConfirmService));
+        CommandManager commandManager = CommandManager.get(this);
+        commandManager.message("#no-perm", sender -> {
+            messages.get("noPerms").send(sender);
+            return Unit.INSTANCE;
+        });
+        commandManager.message("#for-players-only", sender -> {
+            messages.get("noConsole").send(sender);
+            return Unit.INSTANCE;
+        });
+        commandManager.message("#no-such-player", sender -> {
+            messages.get("noExists").send(sender);
+            return Unit.INSTANCE;
+        });
+        commandManager.message("#no-such-player", sender -> {
+            messages.get("usage").send(sender);
+            return Unit.INSTANCE;
+        });
+        commandManager.tabComplete("#materials", input -> itemStackService.allMaterials());
+        commandManager.register(new NoDropCommand(messages, noDropAPI, menuFacade, this,
+                itemStackService, dropConfirmService, eventService, allNoDropService));
         bStatsInit();
         printCredits();
         checkUpdates();
@@ -154,7 +176,7 @@ public final class NoDropX extends JavaPlugin {
 
     private MenuFacade initMenus() {
         CachedMenu personalStorageCachedMenu;
-        if (getConfig().getString("personalStorageType").equalsIgnoreCase("SINGLE_PAGE")) {
+        if (Objects.requireNonNull(getConfig().getString("personalStorageType")).equalsIgnoreCase("SINGLE_PAGE")) {
             SinglePageGui singlePageGui = new SinglePageGui(messages, personalStorageRepo);
             personalStorageCachedMenu = singlePageGui;
             Bukkit.getPluginManager().registerEvents(new SinglePageGuiHandler(new SinglePageController(noDropService,
@@ -183,10 +205,10 @@ public final class NoDropX extends JavaPlugin {
         }
         new UpdateChecker(this, 111485, foliaSupportedUtils).getVersion(version -> {
             if (this.getDescription().getVersion().equals(version)) {
-                getLogger().info("There is not a new update available.");
+                getLogger().info(ChatColor.GREEN + "There is not a new update available.");
             } else {
-                getLogger().info("There is a new update available: " + version);
-                getLogger().info("Download it from https://www.spigotmc.org/resources/nodropx.111485/");
+                getLogger().info(ChatColor.YELLOW + "There is a new update available: " + ChatColor.GOLD + version);
+                getLogger().info(ChatColor.YELLOW + "Download it from " + ChatColor.GOLD + "https://www.spigotmc.org/resources/nodropx.111485/");
             }
         });
     }
@@ -200,7 +222,7 @@ public final class NoDropX extends JavaPlugin {
 
     private void printCredits() {
         printCreditLine("&a************************************************************");
-        printCreditLine("&a* &eNoDropX version &6" + getDescription().getVersion() + "&7 (uses CarcadeX v. 1.0.7)");
+        printCreditLine("&a* &2&lNoDrop&a&lX&e version &6" + getDescription().getVersion() + "&7 (uses KotlinBukkitKIT v. 1.0.4)");
         printCreditLine("&a* &eBy &citzRedTea");
         printCreditLine("&a* &eDetected bukkit version &6" + Bukkit.getBukkitVersion());
         printCreditLine("&a* &esupport HEX colors " + (supportHEX ? "&2YES" : "&4NO"));

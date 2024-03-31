@@ -1,6 +1,6 @@
 usage:
   - "&7[ &aUsage of command &e/nodrop &7]"
-  - "&7| &a/give [player] [item] (amount) &e- give no drop item"
+  - "&7| &a/nodrop give [player] [item] (amount) &e- give no drop item"
 give:
   fail: "&4[!] &cFail! Check item type for valid."
   success: "&2&l[!] &aGived &e%item%&a to &e%player%&a amount &e%amount%&a!"

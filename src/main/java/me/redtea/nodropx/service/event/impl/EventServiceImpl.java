@@ -2,6 +2,7 @@ package me.redtea.nodropx.service.event.impl;
 
 import lombok.RequiredArgsConstructor;
 import me.redtea.nodropx.api.event.NoDropItemThrownEvent;
+import me.redtea.nodropx.api.event.PlayerChangeNoDropEvent;
 import me.redtea.nodropx.service.event.EventService;
 import me.redtea.nodropx.service.nodrop.NoDropService;
 import org.bukkit.Bukkit;
@@ -16,8 +17,15 @@ public class EventServiceImpl implements EventService {
     private final NoDropService noDropService;
 
     @Override
-    public void callThrownEvent(Player who, ItemStack item, NoDropItemThrownEvent.Reason reason, Optional<Cancellable> rootEvent) {
-        if(!noDropService.isNoDrop(item)) return;
+    public PlayerChangeNoDropEvent callPlayerChangeNoDropEvent(Player who, ItemStack item, boolean value) {
+        PlayerChangeNoDropEvent callingEvent = new PlayerChangeNoDropEvent(who, value, item);
+        Bukkit.getPluginManager().callEvent(callingEvent);
+        return callingEvent;
+    }
+
+    @Override
+    public NoDropItemThrownEvent callThrownEvent(Player who, ItemStack item, NoDropItemThrownEvent.Reason reason, Optional<Cancellable> rootEvent) {
+        if(!noDropService.isNoDrop(item)) return null;
         NoDropItemThrownEvent callingEvent = new NoDropItemThrownEvent(
                 who,
                 reason,
@@ -25,5 +33,6 @@ public class EventServiceImpl implements EventService {
         );
         Bukkit.getPluginManager().callEvent(callingEvent);
         rootEvent.ifPresent(cancellable -> cancellable.setCancelled(callingEvent.isCancelled()));
+        return callingEvent;
     }
 }

@@ -11,10 +11,10 @@ import org.jetbrains.annotations.NotNull;
 /**
  * This event is called when item changes no drop status
  */
-public class ChangeNoDropEvent extends PlayerEvent implements Cancellable {
+public class PlayerChangeNoDropEvent extends PlayerEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
 
-    @Getter
+
     private final boolean newValue;
 
     @Getter
@@ -23,7 +23,7 @@ public class ChangeNoDropEvent extends PlayerEvent implements Cancellable {
 
     private boolean isCancelled;
 
-    public ChangeNoDropEvent(@NotNull Player who, boolean newValue, @NotNull ItemStack item) {
+    public PlayerChangeNoDropEvent(@NotNull Player who, boolean newValue, @NotNull ItemStack item) {
         super(who);
         this.newValue = newValue;
         this.item = item;
@@ -48,4 +48,7 @@ public class ChangeNoDropEvent extends PlayerEvent implements Cancellable {
         return handlers;
     }
 
+    public boolean getNewValue() {
+        return newValue;
+    }
 }

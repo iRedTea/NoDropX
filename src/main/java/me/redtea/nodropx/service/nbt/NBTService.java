@@ -9,18 +9,20 @@ public interface NBTService {
     /**
      * Sets the NBT tag "isNoDrop", which indicates that the item is no drop
      * @param item editable item
-     * @param isNoDrop tag value
-     * @since 1.0.0
+     * @param tag nbt tag
+     * @param value tag value
+     * @since 1.0.4
      * @author redtea
      */
-    void setNoDropTag(ItemStack item, boolean isNoDrop);
+    void setBoolTag(ItemStack item, String tag, boolean value);
 
     /**
      * Gets the value of the "isNoDrop" tag, which indicates that the item is no drop
      * @param item checking item
+     * @param tag nbt tag
      * @return tag value
-     * @since 1.0.0
+     * @since 1.0.4
      * @author redtea
      */
-    boolean getNoDropTag(ItemStack item);
+    boolean getBoolTag(ItemStack item, String tag);
 }

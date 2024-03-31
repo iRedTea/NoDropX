@@ -144,4 +144,55 @@ public interface NoDropAPI {
     default @NotNull ItemStack getNoDrop(@NotNull String material) {
         return getNoDrop(material, 1);
     }
+
+    /**
+     * Set AllNoDrop
+     * @param item the item who's AllNoDrop property are changing
+     * @param isAllNoDrop will the item save all items in player's inventory from death?
+     * @author redtea
+     * @since 1.0.4
+     */
+    ItemStack setAllNoDrop(@NotNull ItemStack item, boolean isAllNoDrop);
+
+    /**
+     * Check if item is AllNoDrop
+     * @param item the item being checked
+     * @return true if the item save all items in player's inventory from death
+     * @author redtea
+     * @since 1.0.4
+     */
+    boolean isAllNoDrop(@NotNull ItemStack item);
+
+    /**
+     * Generate new nodropall item by material and amount
+     * @param material material of item
+     * @param amount count of item
+     * @return nodropall item
+     * @author redtea
+     * @since 1.0.4
+     */
+    default ItemStack getAllNoDrop(@NotNull Material material, int amount) {
+        val item = new ItemStack(material, amount);
+        setAllNoDrop(item, true);
+        return item;
+    }
+
+    /**
+     * Generate new nodropall item by material and amount
+     * @param material material of item
+     * @param amount count of item
+     * @return nodropall item
+     * @author redtea
+     * @since 1.0.4
+     */
+
+    /**
+     * @see NoDropAPI#getAllNoDrop(Material, int)
+     */
+     ItemStack getAllNoDrop(@NotNull String material, int amount);
+
+    /**
+     * @see NoDropAPI#getAllNoDrop(Material, int)
+     */
+    void giveAllNoDrop(HumanEntity entity, @NotNull String material, int amount);
 }

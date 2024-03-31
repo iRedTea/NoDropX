@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'me.redtea'
-version = '1.0.3c-SNAPSHOT'
+version = '1.0.4-HOTFIX'
 
 repositories {
     mavenCentral()
@@ -16,6 +16,10 @@ repositories {
     maven {
         name = "sonatype"
         url = "https://oss.sonatype.org/content/groups/public/"
+    }
+    maven {
+        name = "sonatype"
+        url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
     }
     maven {
         name = "CodeMC"
@@ -35,8 +39,9 @@ dependencies {
     compileOnly "org.projectlombok:lombok:1.18.26"
     annotationProcessor 'org.projectlombok:lombok:1.18.26'
     compileOnly "com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT"
-    implementation "me.mattstudios.utils:matt-framework:1.4"
-    implementation "de.tr7zw:item-nbt-api:2.11.3"
+   // implementation "me.mattstudios.utils:matt-framework:1.4"
+    implementation("tech.carcadex:kotlinbukkitkit-commands:1.0.0.4-SNAPSHOT")
+    implementation "de.tr7zw:item-nbt-api:2.12.3"
     implementation "net.kyori:adventure-api:4.14.0"
     implementation "net.kyori:adventure-platform-bukkit:4.3.0"
     implementation files("libs/MiniMessages.jar")
@@ -74,7 +79,6 @@ processResources {
 shadowJar {
     relocate 'de.tr7zw.changeme.nbtapi', 'me.redtea.nodropx.libs.tr7zw.nbt'
     relocate 'de.tr7zw.annotations', 'me.redtea.nodropx.libs.tr7zw.annotations'
-    relocate 'me.mattstudios.mf', 'me.redtea.nodropx.libs.commands'
     relocate 'dev.triumphteam', 'me.redtea.nodropx.libs.gui'
     relocate 'org.checkerframework', 'me.redtea.nodropx.libs.message.oskarsmc.libs.checker'
     relocate 'org.intellij', 'me.redtea.nodropx.libs.intellij'
@@ -83,6 +87,6 @@ shadowJar {
 
 tasks {
     runServer {
-        minecraftVersion("1.16.5")
+        minecraftVersion("1.12.2")
     }
 }
