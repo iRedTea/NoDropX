@@ -23,6 +23,7 @@ SpigotMC resource: https://www.spigotmc.org/resources/nodropx.111485/
 - Mods support (tested on Arclight 1.16.5)
 - ItemsAdder support
 - Folia support
+- Items thats protect all items in inventory from death
 
 
 This plugin uses <a href="https://github.com/iRedTea/CarcadeX">CarcadeX</a> library
