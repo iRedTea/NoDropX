@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'me.redtea'
-version = '1.0.4-HOTFIX'
+version = '1.0.5-HOTFIX'
 
 repositories {
     mavenCentral()

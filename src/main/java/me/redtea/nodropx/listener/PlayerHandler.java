@@ -12,6 +12,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
@@ -43,6 +44,11 @@ public class PlayerHandler implements Listener {
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
+        respawnService.giveSavedItems(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
         respawnService.giveSavedItems(event.getPlayer());
     }
 
