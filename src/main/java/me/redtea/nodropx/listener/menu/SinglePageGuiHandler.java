@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 
 public class SinglePageGuiHandler implements Listener {
     private final SinglePageController controller;
@@ -17,6 +18,13 @@ public class SinglePageGuiHandler implements Listener {
         this.controller = controller;
         this.gui = gui;
 
+    }
+
+    @EventHandler
+    public void onDrag(InventoryDragEvent event) {
+        if(gui.isStorageGui(event.getInventory())) {
+            controller.onDrag(event);
+        }
     }
 
 

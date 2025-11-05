@@ -5,10 +5,10 @@ import lombok.RequiredArgsConstructor;
 import me.redtea.nodropx.libs.carcadex.repo.MutableRepo;
 import me.redtea.nodropx.service.nodrop.NoDropService;
 import me.redtea.nodropx.util.FoliaSupportedUtils;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.*;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
@@ -30,16 +30,28 @@ public class SinglePageController {
         if(clickActions.contains(event.getAction()) && !(noDropService.isNoDrop(event.getCurrentItem()))) {
             event.setCancelled(true);
         }
+        foliaCheck(event.getInventory(), event.getWhoClicked(), event);
+
+    }
+
+    public void onDrag(InventoryDragEvent event) {
+        if((event.getNewItems().entrySet().stream().anyMatch(it -> !noDropService.isNoDrop(it.getValue())))) {
+            event.setCancelled(true);
+        }
+        foliaCheck(event.getInventory(), event.getWhoClicked(), event);
+
+    }
+
+    private void foliaCheck(Inventory inventory, HumanEntity whoClicked, InventoryEvent event) {
         foliaSupportedUtils.runTask(() -> {
-            for(ItemStack itemStack : event.getInventory()) {
+            for(ItemStack itemStack : inventory) {
                 if (itemStack != null && !noDropService.isNoDrop(itemStack)) {
-                    event.getWhoClicked().getInventory().addItem(itemStack);
-                    event.getInventory().remove(itemStack);
-                    ((Player) event.getWhoClicked()).updateInventory();
+                    whoClicked.getInventory().addItem(itemStack);
+                    inventory.remove(itemStack);
+                    ((Player) whoClicked).updateInventory();
                 }
             }
         });
-
     }
 
     public void onClose(InventoryCloseEvent event) {

@@ -1,7 +1,10 @@
 package me.redtea.nodropx;
 
-import kotlin.Unit;
-import kotlin.jvm.functions.Function1;
+import dev.triumphteam.cmd.bukkit.BukkitCommandManager;
+import dev.triumphteam.cmd.core.argument.keyed.Argument;
+import dev.triumphteam.cmd.core.argument.keyed.ArgumentKey;
+import dev.triumphteam.cmd.core.message.MessageKey;
+import dev.triumphteam.cmd.core.suggestion.SuggestionKey;
 import lombok.Getter;
 import me.redtea.nodropx.api.facade.NoDropAPI;
 import me.redtea.nodropx.api.facade.impl.NoDropXFacade;
@@ -26,6 +29,7 @@ import me.redtea.nodropx.menu.Menu;
 import me.redtea.nodropx.menu.dropconfirm.DropConfirmMFGui;
 import me.redtea.nodropx.menu.facade.MenuFacade;
 import me.redtea.nodropx.menu.facade.impl.MenuFacadeImpl;
+import me.redtea.nodropx.menu.facade.impl.NullMenuFacadeImpl;
 import me.redtea.nodropx.menu.storage.pages.MFPageGui;
 import me.redtea.nodropx.menu.storage.singlepage.SinglePageController;
 import me.redtea.nodropx.menu.storage.singlepage.SinglePageGui;
@@ -59,12 +63,13 @@ import me.redtea.nodropx.util.FoliaSupportedUtils;
 import me.redtea.nodropx.util.UpdateChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
-import tech.carcadex.kotlinbukkitkit.commands.manager.CommandManager;
 
 import java.io.File;
 import java.util.List;
@@ -149,25 +154,65 @@ public final class NoDropX extends JavaPlugin {
         Bukkit.getServicesManager().register(NoDropAPI.class,
                 noDropAPI, this, ServicePriority.Normal);
 
-        CommandManager commandManager = CommandManager.get(this);
-        commandManager.message("#no-perm", sender -> {
-            messages.get("noPerms").send(sender);
-            return Unit.INSTANCE;
+//        CommandManager commandManager = CommandManager.get(this);
+//        commandManager.message("#no-perm", sender -> {
+//            messages.get("noPerms").send(sender);
+//            return Unit.INSTANCE;
+//        });
+//        commandManager.message("#for-players-only", sender -> {
+//            messages.get("noConsole").send(sender);
+//            return Unit.INSTANCE;
+//        });
+//        commandManager.message("#no-such-player", sender -> {
+//            messages.get("noExists").send(sender);
+//            return Unit.INSTANCE;
+//        });
+//        commandManager.message("#no-such-player", sender -> {
+//            messages.get("usage").send(sender);
+//            return Unit.INSTANCE;
+//        });
+//        commandManager.tabComplete("#materials", input -> itemStackService.allMaterials());
+//        commandManager.register(new NoDropCommand(messages, noDropAPI, menuFacade, this,
+//                itemStackService, dropConfirmService, eventService, allNoDropService));
+        final BukkitCommandManager<CommandSender> commandManager = BukkitCommandManager.create(this, builder -> {
+
         });
-        commandManager.message("#for-players-only", sender -> {
-            messages.get("noConsole").send(sender);
-            return Unit.INSTANCE;
-        });
-        commandManager.message("#no-such-player", sender -> {
-            messages.get("noExists").send(sender);
-            return Unit.INSTANCE;
-        });
-        commandManager.message("#no-such-player", sender -> {
+
+        commandManager.registerNamedArguments(
+                ArgumentKey.of("query-parameters"),
+                Argument.forBoolean().name("rev").longName("reversed").build(),
+                Argument.forInt().name("r").longName("radius").suggestion(SuggestionKey.of("radius")).build(),
+                Argument.forString().name("since").build(),
+                Argument.forString().name("before").build(),
+                Argument.forString().name("cause").build(),
+                Argument.forString().name("at").build(),
+                Argument.forType(Material.class).name("material").build(),
+                Argument.forString().name("bounds").build(),
+                Argument.forType(Material.class).name("ma").build(),
+                Argument.listOf(String.class).name("a").build(),
+                Argument.listOf(Material.class).name("m").build(),
+                Argument.listOf(Player.class).name("p").build()
+        );
+
+        commandManager.registerStaticSuggestion(SuggestionKey.of("allmaterials"), itemStackService.allMaterials());
+
+
+
+        commandManager.registerMessage(MessageKey.TOO_MANY_ARGUMENTS, (sender, context) -> {
             messages.get("usage").send(sender);
-            return Unit.INSTANCE;
         });
-        commandManager.tabComplete("#materials", input -> itemStackService.allMaterials());
-        commandManager.register(new NoDropCommand(messages, noDropAPI, menuFacade, this,
+        commandManager.registerMessage(MessageKey.UNKNOWN_COMMAND, (sender, context) -> {
+            messages.get("usage").send(sender);
+        });
+        commandManager.registerMessage(MessageKey.NOT_ENOUGH_ARGUMENTS, (sender, context) -> {
+            messages.get("usage").send(sender);
+        });
+        commandManager.registerMessage(MessageKey.INVALID_ARGUMENT, (sender, context) -> {
+            messages.get("error").send(sender);
+        });
+
+
+        commandManager.registerCommand(new NoDropCommand(messages, noDropAPI, menuFacade, this,
                 itemStackService, dropConfirmService, eventService, allNoDropService));
         bStatsInit();
         printCredits();
@@ -175,24 +220,32 @@ public final class NoDropX extends JavaPlugin {
     }
 
     private MenuFacade initMenus() {
-        CachedMenu personalStorageCachedMenu;
-        if (Objects.requireNonNull(getConfig().getString("personalStorageType")).equalsIgnoreCase("SINGLE_PAGE")) {
-            SinglePageGui singlePageGui = new SinglePageGui(messages, personalStorageRepo);
-            personalStorageCachedMenu = singlePageGui;
-            Bukkit.getPluginManager().registerEvents(new SinglePageGuiHandler(new SinglePageController(noDropService,
-                    singlePageGui, personalStorageRepo, foliaSupportedUtils), singlePageGui), this);
-        } else
-            personalStorageCachedMenu = new MFPageGui(messages, personalStorageRepo, noDropService, itemStackService, this);
+        try {
+            CachedMenu personalStorageCachedMenu;
+            if (Objects.requireNonNull(getConfig().getString("personalStorageType")).equalsIgnoreCase("SINGLE_PAGE")) {
+                SinglePageGui singlePageGui = new SinglePageGui(messages, personalStorageRepo);
+                personalStorageCachedMenu = singlePageGui;
+                Bukkit.getPluginManager().registerEvents(new SinglePageGuiHandler(new SinglePageController(noDropService,
+                        singlePageGui, personalStorageRepo, foliaSupportedUtils), singlePageGui), this);
+            } else
+                personalStorageCachedMenu = new MFPageGui(messages, personalStorageRepo, noDropService, itemStackService, this);
 
-        Menu confirmMenu = new DropConfirmMFGui(messages, dropConfirmService, this);
-        return new MenuFacadeImpl(personalStorageCachedMenu, confirmMenu);
+            Menu confirmMenu = new DropConfirmMFGui(messages, dropConfirmService, this);
+            return new MenuFacadeImpl(personalStorageCachedMenu, confirmMenu);
+        } catch (Exception e) {
+            Bukkit.getLogger().severe(e.getMessage());
+            e.printStackTrace();
+            printConsoleLine("&4Can not use menus on this server!");
+        }
+
+        return new NullMenuFacadeImpl();
     }
 
     private ItemStackService initItemStackService() {
         ItemStackService result = new ItemStackServiceImpl();
         if (Bukkit.getPluginManager().getPlugin("ItemsAdder") != null) {
             supportItemsAdder = true;
-            getLogger().info(ChatColor.GREEN + "ItemsAdder found! Registering a CustomStack provider for it.");
+            printConsoleLine("ItemsAdder found! Registering a CustomStack provider for it.");
             result.registerProvider(new ItemsAdderProvider());
         }
         result.registerProvider(new ItemStackProviderDefault());
@@ -205,10 +258,10 @@ public final class NoDropX extends JavaPlugin {
         }
         new UpdateChecker(this, 111485, foliaSupportedUtils).getVersion(version -> {
             if (this.getDescription().getVersion().equals(version)) {
-                getLogger().info(ChatColor.GREEN + "There is not a new update available.");
+                printConsoleLine("There is not a new update available.");
             } else {
-                getLogger().info(ChatColor.YELLOW + "There is a new update available: " + ChatColor.GOLD + version);
-                getLogger().info(ChatColor.YELLOW + "Download it from " + ChatColor.GOLD + "https://www.spigotmc.org/resources/nodropx.111485/");
+                printConsoleLine("&eThere is a new update available: " + ChatColor.GOLD + version);
+                printConsoleLine("&eDownload it from " + ChatColor.GOLD + "https://www.spigotmc.org/resources/nodropx.111485/");
             }
         });
     }
@@ -222,12 +275,17 @@ public final class NoDropX extends JavaPlugin {
 
     private void printCredits() {
         printCreditLine("&a************************************************************");
-        printCreditLine("&a* &2&lNoDrop&a&lX&e version &6" + getDescription().getVersion() + "&7 (uses KotlinBukkitKIT v. 1.0.4)");
+        printCreditLine("&a* &2&lNoDrop&a&lX&e version &6" + getDescription().getVersion());
         printCreditLine("&a* &eBy &citzRedTea");
         printCreditLine("&a* &eDetected bukkit version &6" + Bukkit.getBukkitVersion());
         printCreditLine("&a* &esupport HEX colors " + (supportHEX ? "&2YES" : "&4NO"));
         printCreditLine("&a* &esupport Kyori as lore " + (supportKyoriLore ? "&2YES" : "&4NO"));
         printCreditLine("&a************************************************************");
+    }
+
+    private void printConsoleLine(String s) {
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&',
+                "&e[&2&lNoDrop&a&lX&e] &f" + s));
     }
 
     private void printCreditLine(String s) {

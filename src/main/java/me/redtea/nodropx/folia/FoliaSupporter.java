@@ -26,8 +26,14 @@ public class FoliaSupporter {
     @SneakyThrows
     public void run(RespawnService respawnService, Plugin plugin) {
         try {
+            boolean isFolia = false;
+            try {
+                Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+                isFolia = true;
+            } catch (ClassNotFoundException ignored) {}
             String version = ((JsonObject) new JsonParser().parse(new FileReader("version_history.json"))).get("currentVersion").getAsString();
-            if(!version.toLowerCase().contains("folia") && !plugin.getConfig().getBoolean("forceUseFoliaPatches")) {
+            if(!isFolia && !version.toLowerCase().contains("folia") && !plugin.getConfig().getBoolean("forceUseFoliaPatches")
+            && !(Bukkit.getName().toLowerCase().contains("folia"))) {
                 return;
             }
             runningOnFolia = true;
@@ -56,7 +62,7 @@ public class FoliaSupporter {
                         }
                     }
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(500);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }

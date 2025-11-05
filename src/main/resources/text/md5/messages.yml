@@ -1,6 +1,12 @@
 usage:
   - "&7[ &aUsage of command &e/nodrop &7]"
   - "&7| &a/nodrop give [player] [item] (amount) &e- give no drop item"
+  - "&7| &a/nodrop storage &e- open no drop items storage"
+  - "&7| &a/nodrop giveStorage [player] [material] (amount) &e- Gives nodrop item to the player's personal storage"
+  - "&7| &a/nodrop giveAllNoDrop [player] [material] (amount) &e- Gives allnodrop item to player"
+  - "&7| &a/nodrop ignoreConfirm &e- Ignore confirm gui (only if confirm enabled)"
+  - "&7| &a/nodrop ignoreConfirmTimed [seconds] &e- Timed ignore confirm gui (only if confirm enabled)"
+  - "&7| &a/nodrop noIgnoreConfirm &e- Drop ignore confirm setting (only if confirm enabled)"
 give:
   fail: "&4[!] &cFail! Check item type for valid."
   success: "&2&l[!] &aGived &e%item%&a to &e%player%&a amount &e%amount%&a!"
@@ -11,10 +17,14 @@ applyHand:
 giveToStorage:
   fail: "&4[!] &cFail! Check item type for valid."
   success: "&2&l[!] &aGived &e%item%&a to &e%player%&a amount &e%amount%&a to storage!"
+ignoreConfirm:
+  on: "&2&l[!] &aNow you are ignore confirm menu!"
+  off: "&2&l[!] &aNow you are not ignore confirm menu!"
 
 noPerms: "&4&l[!] &cNo perms for this!"
 noConsole: "&4&l[!] &cOnly players can use it!"
 noExists: "&4&l[!] &cThis player doesnt exists!"
+error: "&4&l[!] &cAn error occurred during the execution of the command!"
 
 gui:
   confirm:

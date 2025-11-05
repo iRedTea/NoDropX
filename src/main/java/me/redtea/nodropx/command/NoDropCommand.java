@@ -1,5 +1,11 @@
 package me.redtea.nodropx.command;
 
+import dev.triumphteam.cmd.bukkit.annotation.Permission;
+import dev.triumphteam.cmd.core.annotations.Command;
+import dev.triumphteam.cmd.core.annotations.NamedArguments;
+import dev.triumphteam.cmd.core.annotations.Optional;
+import dev.triumphteam.cmd.core.annotations.Suggestion;
+import dev.triumphteam.cmd.core.suggestion.SuggestionContext;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import me.redtea.nodropx.NoDropX;
@@ -12,20 +18,22 @@ import me.redtea.nodropx.service.event.EventService;
 import me.redtea.nodropx.service.material.ItemStackService;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import tech.carcadex.kotlinbukkitkit.commands.reflection.annotations.*;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Main command of plugin
  * <p>/nodrop - usage</p>
  * <p>/nodrop give [Player] [Material] [Amount (optional)]</p>
  */
-@Command(name = "nodrop")
+@Command("nodrop")
 @RequiredArgsConstructor
 public class NoDropCommand {
     private final Messages messages;
@@ -37,17 +45,20 @@ public class NoDropCommand {
     private final EventService eventService;
     private final AllNoDropService allNoDropService;
 
-    @Default
+    @Command
     public void onDefault(final CommandSender sender) {
         messages.get("usage").send(sender);
     }
 
-    @SubCommand(name = "give")
-    @Permission(perm = "nodropx.give")
-    @TabComplete(complete = {"#players", "#materials", "#range:1-64"})
+
+
+    @Command("give")
+    @Permission("nodropx.give")
+    @NamedArguments("query-parameters")
+    //@TabComplete(complete = {"#players", "#materials", "#range:1-64"})
     public void onGive(final CommandSender sender,
                        final Player player,
-                       final String material,
+                       @Suggestion("allmaterials") final String material,
                        @Optional final Integer amount) {
         try {
             noDropAPI.giveNoDrop(player, material, amount == null || amount == 0 ? 1 : amount);
@@ -57,22 +68,24 @@ public class NoDropCommand {
                     .replaceAll("%amount%", amount == null ? "1" : amount.toString())
                     .send(sender);
         } catch (Throwable e) {
+            e.printStackTrace();
             messages.get("give.fail").send(sender);
         }
 
     }
 
-    @SubCommand(name = "reload")
-    @Permission(perm = "nodropx.reload")
+    @Command("reload")
+    @Permission("nodropx.reload")
     public void onReload(final CommandSender sender) {
         long time = new Date().getTime();
         plugin.onReload();
         messages.get("reload").replaceAll("%time%", String.valueOf(new Date().getTime() - time)).send(sender);
     }
 
-    @SubCommand(name = "giveStorage")
-    @Permission(perm = "nodropx.giveStorage")
-    @TabComplete(complete = {"#players", "#materials", "#range:1-64"})
+    @Command("givestorage")
+    @Permission("nodropx.giveStorage")
+    @NamedArguments("query-parameters")
+    //@TabComplete(complete = {"#players", "#materials", "#range:1-64"})
     public void onGiveStorage(final CommandSender sender,
                               final String playerName,
                               final String material,
@@ -96,14 +109,14 @@ public class NoDropCommand {
 
     }
 
-    @SubCommand(name = "ignoreConfirm")
-    @Permission(perm = "nodropx.ignoreConfirm")
+    @Command("ignoreconfirm")
+    @Permission("nodropx.ignoreConfirm")
     public void onIgnoreConfirm(final CommandSender sender, @Optional Player target) {
         if(target == null) {
             if(!(sender instanceof Player)) {
-                sender.sendMessage("player only");
-                return;
+                messages.get("error").send(sender);
             } else {
+                messages.get("ignoreConfirm.on").send(sender);
                 confirmService.forceConfirm((Player) sender);
             }
         } else {
@@ -111,17 +124,17 @@ public class NoDropCommand {
         }
     }
 
-    @SubCommand(name = "ignoreConfirmTimed")
-    @Permission(perm = "nodropx.ignoreConfirm.timed")
+    @Command("ignoreconfirmtimed")
+    @Permission("nodropx.ignoreConfirm.timed")
     public void onIgnoreConfirmTimed(final CommandSender sender, Integer sec, @Optional Player target) {
         if(target == null) {
             if(!(sender instanceof Player)) {
-                sender.sendMessage("player only");
-                return;
+                messages.get("error").send(sender);
             } else {
                 confirmService.forceConfirm((Player) sender);
                 try {
                     Bukkit.getScheduler().runTaskLater(plugin,() -> confirmService.removeForceConfirm((Player) sender),20L*sec);
+                    messages.get("ignoreConfirm.on").send(sender);
                 } catch (UnsupportedOperationException e) {
                     sender.sendMessage(ChatColor.RED + "This operation didn't supports on your environment");
                 }
@@ -136,22 +149,22 @@ public class NoDropCommand {
         }
     }
 
-    @SubCommand(name = "noIgnoreConfirm")
-    @Permission(perm = "nodropx.noIgnoreConfirm")
+    @Command("noignoreconfirm")
+    @Permission("nodropx.noIgnoreConfirm")
     public void onNoIgnoreConfirm(final CommandSender sender, @Optional Player target) {
         if(target == null) {
             if(!(sender instanceof Player)) {
-                sender.sendMessage("player only");
-                return;
+                messages.get("error").send(sender);
             } else {
                 confirmService.removeForceConfirm((Player) sender);
+                messages.get("ignoreConfirm.off").send(sender);
             }
         } else {
             confirmService.removeForceConfirm(target);
         }
     }
-    @SubCommand(name = "applyHand")
-    @Permission(perm = "nodropx.applyhand")
+    @Command("applyhand")
+    @Permission("nodropx.applyhand")
     public void onApplyHand(final Player sender) {
         try {
             val event = eventService.callPlayerChangeNoDropEvent(sender, sender.getInventory().getItemInMainHand(), true);
@@ -162,9 +175,8 @@ public class NoDropCommand {
         }
     }
 
-    @SubCommand(name = "gui")
-    @Aliases(aliases = "storage")
-    @Permission(perm = "nodropx.gui")
+    @Command(value = "gui", alias = "storage")
+    @Permission("nodropx.gui")
     public void onGui(final Player sender) {
         menuFacade.openPersonalStorage(sender);
     }
@@ -177,9 +189,10 @@ public class NoDropCommand {
         return null;
     }
 
-    @SubCommand(name = "giveallnodrop")
-    @Permission(perm = "nodropx.giveallnodrop")
-    @TabComplete(complete = {"#players", "#materials", "#range:1-64"})
+    @Command("giveallnodrop")
+    @Permission("nodropx.giveallnodrop")
+    @NamedArguments("query-parameters")
+  //  @TabComplete(complete = {"#players", "#materials", "#range:1-64"})
     public void onGiveAllNoDrop(final CommandSender sender,
                        final Player player,
                        final String material,

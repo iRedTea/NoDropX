@@ -26,7 +26,13 @@ public class SinglePageGui implements CachedMenu {
             player.openInventory(cache.get(player.getUniqueId()));
             return;
         }
-        Inventory gui = Bukkit.createInventory(null, 54, MD5ColorUtils.translateHexColorCodes(messages.get("gui.personalStorage.title").asUnparsedString()));
+        Inventory gui;
+        try {
+            gui = Bukkit.createInventory(null, 54, messages.get("gui.personalStorage.title").asComponent());
+        }
+        catch (Throwable e) {
+            gui = Bukkit.createInventory(null, 54, MD5ColorUtils.translateHexColorCodes(messages.get("gui.personalStorage.title").asUnparsedString()));
+        }
         for(ItemStack item : personalStorageRepo.get(player.getUniqueId()).orElse(new ArrayList<>())) if(item != null) gui.addItem(item);
 
         cache.put(player.getUniqueId(), gui);

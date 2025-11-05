@@ -1,6 +1,12 @@
 usage:
   - "<gray>[ <green>Usage of command <yellow>/nodrop <gray>]"
   - "<gray>| <green>/nodrop give [player] [item] (amount) <yellow>- give no drop item"
+  - "<gray>| <green>/nodrop storage <yellow>- open no drop items storage"
+  - "<gray>| <green>/nodrop giveStorage [player] [material] (amount) <yellow>- Gives nodrop item to the player's personal storage"
+  - "<gray>| <green>/nodrop giveallnodrop [player] [material] (amount) <yellow>- Gives allnodrop item to player"
+  - "<gray>| <green>/nodrop ignoreConfirm <yellow>- Ignore confirm gui (only if confirm enabled)"
+  - "<gray>| <green>/nodrop ignoreConfirmTimed [seconds] <yellow>- Timed ignore confirm gui (only if confirm enabled)"
+  - "<gray>| <green>/nodrop noIgnoreConfirm <yellow>- Drop ignore confirm setting (only if confirm enabled)"
 give:
   fail: "<dark_red><bold>[!] <red>Fail! Check item type for valid."
   success: "<green><bold>[!] <reset><green>Gived <yellow>%item%<green> to <yellow>%player%<green> amount <yellow>%amount%<green>!"
@@ -11,10 +17,14 @@ applyHand:
 giveToStorage:
   fail: "<dark_red><bold>[!] <red>Fail! Check item type for valid."
   success: "<green><bold>[!] <reset><green>Gived <yellow>%item%<green> to <yellow>%player%<green> amount <yellow>%amount%<green> to storage!"
+ignoreConfirm:
+  on: "<green><bold>[!] <reset><green>Now you are ignore confirm menu!"
+  off: "<green><bold>[!] <reset><green>Now you are not ignore confirm menu!"
 
 noPerms: "<dark_red><bold>[!] <red>No perms for this!"
 noConsole: "<dark_red><bold>[!] <red>Only players can use it!"
 noExists: "<dark_red><bold>[!] <red>This player doesnt exists!"
+error: "<dark_red><bold>[!] <red>An error occurred during the execution of the command!"
 
 gui:
   confirm:
