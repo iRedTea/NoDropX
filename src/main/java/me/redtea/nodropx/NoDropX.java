@@ -4,7 +4,9 @@ import dev.triumphteam.cmd.bukkit.BukkitCommandManager;
 import dev.triumphteam.cmd.core.argument.keyed.Argument;
 import dev.triumphteam.cmd.core.argument.keyed.ArgumentKey;
 import dev.triumphteam.cmd.core.message.MessageKey;
+import dev.triumphteam.cmd.core.suggestion.SuggestionContext;
 import dev.triumphteam.cmd.core.suggestion.SuggestionKey;
+import dev.triumphteam.cmd.core.suggestion.SuggestionResolver;
 import lombok.Getter;
 import me.redtea.nodropx.api.facade.NoDropAPI;
 import me.redtea.nodropx.api.facade.impl.NoDropXFacade;
@@ -51,6 +53,7 @@ import me.redtea.nodropx.service.event.impl.EventServiceImpl;
 import me.redtea.nodropx.service.material.ItemStackService;
 import me.redtea.nodropx.service.material.impl.ItemStackServiceImpl;
 import me.redtea.nodropx.service.nbt.NBTService;
+import me.redtea.nodropx.service.nbt.impl.FastNBTServiceImpl;
 import me.redtea.nodropx.service.nbt.impl.Tr7zwNBTServiceImpl;
 import me.redtea.nodropx.service.nodrop.NoDropService;
 import me.redtea.nodropx.service.nodrop.impl.NoDropServiceImpl;
@@ -70,8 +73,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -117,7 +122,7 @@ public final class NoDropX extends JavaPlugin {
         noDropCosmeticService.load(YamlConfiguration.loadConfiguration(textContext.getCosmetics()));
 
         dropConfirmService = getConfig().getBoolean("confirmThrowNoDropItem") ? new DropConfirmServiceImpl() : new DropConfirmNull();
-        NBTService nbtService = new Tr7zwNBTServiceImpl();
+        NBTService nbtService = new FastNBTServiceImpl();
         noDropService = new NoDropServiceImpl(nbtService, noDropCosmeticService);
         NoDropItemFactory noDropItemFactory = new NoDropItemFactoryImpl(noDropService);
         EventService eventService = new EventServiceImpl(noDropService);
@@ -178,23 +183,15 @@ public final class NoDropX extends JavaPlugin {
 
         });
 
-        commandManager.registerNamedArguments(
-                ArgumentKey.of("query-parameters"),
-                Argument.forBoolean().name("rev").longName("reversed").build(),
-                Argument.forInt().name("r").longName("radius").suggestion(SuggestionKey.of("radius")).build(),
-                Argument.forString().name("since").build(),
-                Argument.forString().name("before").build(),
-                Argument.forString().name("cause").build(),
-                Argument.forString().name("at").build(),
-                Argument.forType(Material.class).name("material").build(),
-                Argument.forString().name("bounds").build(),
-                Argument.forType(Material.class).name("ma").build(),
-                Argument.listOf(String.class).name("a").build(),
-                Argument.listOf(Material.class).name("m").build(),
-                Argument.listOf(Player.class).name("p").build()
-        );
 
-        commandManager.registerStaticSuggestion(SuggestionKey.of("allmaterials"), itemStackService.allMaterials());
+
+        commandManager.registerSuggestion(SuggestionKey.of("allmaterials"),
+                new SuggestionResolver.Simple<CommandSender>() {
+                    @Override
+                    public @NotNull List<String> resolve(@NotNull SuggestionContext<CommandSender> context) {
+                        return itemStackService.allMaterials();
+                    }
+                });
 
 
 

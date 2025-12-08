@@ -12,19 +12,12 @@ import java.util.stream.Collectors;
 
 public class CapacityServiceImpl implements CapacityService {
     private final Repo<String, List<Integer>> capacityRepo;
-    private final Map<String, Integer> customModelDataRequired = new HashMap<>();
     public CapacityServiceImpl(Plugin plugin) {
         capacityRepo = new YamlRepo<>(
                 new File(plugin.getDataFolder(), "capacity.yml").toPath(),
                 plugin,
                 conf -> conf.getKeys(false).stream().collect(Collectors.toMap(
-                        value -> {
-                            if(value.contains("->")) {
-                                String[] args = value.split("->");
-                                customModelDataRequired.put(args[0], Integer.parseInt(args[1]));
-                                return args[0];
-                            } else return value;
-                        },
+                        value -> value,
                         conf::getIntegerList))
         );
     }
@@ -32,17 +25,11 @@ public class CapacityServiceImpl implements CapacityService {
     @Override
     public List<Integer> get(ItemStack item) {
         String key = item.getType().name();
+        if(item.hasItemMeta() && item.getItemMeta().hasCustomModelData()) {
+            key += "->" + item.getItemMeta().getCustomModelData();
+        }
         Optional<List<Integer>> result = capacityRepo.get(key);
-        if(!result.isPresent()) {
-            return Collections.emptyList();
-        }
-        if(customModelDataRequired.containsKey(key)) {
-            int cmi = customModelDataRequired.get(key);
-            if(!item.getItemMeta().hasCustomModelData() || item.getItemMeta().getCustomModelData() != cmi) {
-                return Collections.emptyList();
-            }
-        }
-        return result.get();
+        return result.orElse(Collections.emptyList());
     }
 
     @Override
