@@ -22,6 +22,7 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -61,7 +62,10 @@ public class NoDropCommand {
                        @Suggestion("allmaterials") final String material,
                        @Optional final Integer amount) {
         try {
-            noDropAPI.giveNoDrop(player, material, amount == null || amount == 0 ? 1 : amount);
+            ItemStack item = noDropAPI.getNoDrop(material, amount == null || amount == 0 ? 1 : amount);
+            player.getInventory().addItem(item);
+
+
             messages.get("give.success")
                     .replaceAll("%item%", material)
                     .replaceAll("%player%", player.getName())

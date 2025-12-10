@@ -13,8 +13,8 @@ public class NoDropServiceImpl implements NoDropService {
 
     @Override
     public void setNoDrop(ItemStack item, boolean isNoDrop) {
-        nbtService.setBoolTag(item, "isNoDrop", true);
         cosmeticService.applyAll(item);
+        nbtService.setBoolTag(item, "isNoDrop", true);
     }
 
     @Override

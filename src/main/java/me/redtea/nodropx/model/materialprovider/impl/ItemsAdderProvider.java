@@ -14,7 +14,7 @@ public class ItemsAdderProvider implements ItemStackProvider {
     @Override
     public ItemStack get(String s) {
         CustomStack stack = CustomStack.getInstance(s);
-        return (stack != null) ? stack.getItemStack() : null;
+        return (stack != null) ? stack.getItemStack().clone() : null;
     }
 
     @Override

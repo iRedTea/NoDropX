@@ -54,7 +54,6 @@ import me.redtea.nodropx.service.material.ItemStackService;
 import me.redtea.nodropx.service.material.impl.ItemStackServiceImpl;
 import me.redtea.nodropx.service.nbt.NBTService;
 import me.redtea.nodropx.service.nbt.impl.FastNBTServiceImpl;
-import me.redtea.nodropx.service.nbt.impl.Tr7zwNBTServiceImpl;
 import me.redtea.nodropx.service.nodrop.NoDropService;
 import me.redtea.nodropx.service.nodrop.impl.NoDropServiceImpl;
 import me.redtea.nodropx.service.respawn.RespawnService;
